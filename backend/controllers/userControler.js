@@ -15,13 +15,13 @@ const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password, role } = req.body;
 
     // Validation
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password) {
         res.status(400);
         throw new Error("Please fill in all required fields");
     }
-    if (password.length < 6) {
+    if (password.length < 8) {
         res.status(400);
-        throw new Error("Password must be up to 6 characters");
+        throw new Error("Password must be up to 8 characters");
     }
 
     // Check if user email already exists
@@ -37,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
         name,
         email,
         password,
-        role
+        role,
     });
 
     //   Generate Token
@@ -53,11 +53,12 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        const { _id, name, email, photo, phone, bio } = user;
+        const { _id, name, email,role, photo, phone, bio } = user;
         res.status(201).json({
             _id,
             name,
             email,
+            role,
             photo,
             phone,
             bio,
@@ -104,11 +105,12 @@ const loginUser = asyncHandler(async (req, res) => {
         });
     }
     if (user && passwordIsCorrect) {
-        const { _id, name, email, photo, phone, bio } = user;
+        const { _id, name, email, role, photo, phone, bio } = user;
         res.status(200).json({
             _id,
             name,
             email,
+            role,
             photo,
             phone,
             bio,
@@ -137,11 +139,12 @@ const getUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-        const { _id, name, email, photo, phone, bio } = user;
+        const { _id, name, email, role, photo, phone, bio } = user;
         res.status(200).json({
             _id,
             name,
             email,
+            role,
             photo,
             phone,
             bio,
@@ -171,9 +174,10 @@ const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-        const { name, email, photo, phone, bio } = user;
+        const { name, email, role, photo, phone, bio } = user;
         user.email = email;
         user.name = req.body.name || name;
+        user.role = req.body.role || role;
         user.phone = req.body.phone || phone;
         user.bio = req.body.bio || bio;
         user.photo = req.body.photo || photo;
@@ -183,6 +187,7 @@ const updateUser = asyncHandler(async (req, res) => {
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
+            role: updatedUser.role,
             photo: updatedUser.photo,
             phone: updatedUser.phone,
             bio: updatedUser.bio,
@@ -230,14 +235,18 @@ const forgotPassword = asyncHandler(async (req, res) => {
         throw new Error("User does not exist");
     }
 
+    // Delete token if it exists in DB
+    let token = await Token.findOne({ userId: user._id });
+    if (token) {
+        await token.deleteOne();
+    }
 
-    // Create Reste Token
+    // Create Reset Token
     let resetToken = crypto.randomBytes(32).toString("hex") + user._id;
     console.log(resetToken);
 
-
     // Construct Reset Url
-    const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
     // Reset Email
     const message = `
@@ -274,7 +283,7 @@ const resetPassword = asyncHandler(async (req, res) => {
         .update(resetToken)
         .digest("hex");
 
-    // fIND tOKEN in DB
+    // Find token in DB
     const userToken = await Token.findOne({
         token: hashedToken,
         expiresAt: { $gt: Date.now() },
@@ -305,93 +314,3 @@ module.exports = {
     forgotPassword,
     resetPassword,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const User = require('../models/userModel');
-// const argon2 = require('argon2');
-
-// // Controller function for adding a new user
-// async function addUser(req, res) {
-//     try {
-//         const { fullName, email, password, role } = req.body;
-//         // Check if a user with the same email already exists
-//         const existingUser = await User.findOne({ email });
-//         if (existingUser) {
-//             return res.status(409).json({ message: 'User already exists with this email' });
-//         }
-
-//         // Create a new user instance
-//         const newUser = new User({
-//             fullName,
-//             email,
-//             password,
-//             role,
-//         });
-
-//         // Save the new user to the database
-//         await newUser.save();
-
-//         res.status(201).json({ message: 'User created successfully', user: newUser });
-//     } catch (err) {
-//         res.status(500).json({ message: 'Error creating user', error: err.message });
-//     }
-// }
-
-// // Controller function for logging in a user
-// async function loginUser(req, res) {
-//     try {
-//         const { email, password } = req.body;
-
-//         // Find the user by email
-//         const user = await User.findOne({ email });
-
-//         // Check if the user exists
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-
-//         // Verify the password using Argon2
-//         const isPasswordCorrect = await argon2.verify(user.password, password);
-
-//         if (isPasswordCorrect) {
-//             res.status(200).json({ message: 'Login successful', user: user });
-//         } else {
-//             res.status(401).json({ message: 'Incorrect password' });
-//         }
-//     } catch (err) {
-//         res.status(500).json({ message: 'Error logging in', error: err.message });
-//     }
-// }
-
-// module.exports = { addUser, loginUser };

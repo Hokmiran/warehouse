@@ -1,0 +1,17 @@
+.loginField {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loginBox {
+    width: 300px;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.signText {
+    text-align: center;
+}

@@ -67,7 +67,7 @@ export const logoutUser = async () => {
 export const forgotPassword = async (userData) => {
   try {
     const response = await axios.post(
-      `${BACKEND_URL}/users/forgotpassword`,
+      `${BACKEND_URL}/users/forgot-password`,
       userData
     );
     toast.success(response.data.message);
@@ -84,7 +84,7 @@ export const forgotPassword = async (userData) => {
 export const resetPassword = async (userData, resetToken) => {
   try {
     const response = await axios.put(
-      `${BACKEND_URL}/users/resetpassword/${resetToken}`,
+      `${BACKEND_URL}/users/reset-password/${resetToken}`,
       userData
     );
     return response.data;

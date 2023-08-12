@@ -7,17 +7,17 @@ const productSchema = mongoose.Schema(
       required: true,
       ref: "User",
     },
-    name: {
+    productName: {
       type: String,
       required: [true, "Please add a name"],
       trim: true,
     },
-    sku: {
-      type: String,
-      required: true,
-      default: "SKU",
-      trim: true,
-    },
+    // sku: {
+    //   type: String,
+    //   required: true,
+    //   default: "SKU",
+    //   trim: true,
+    // },
     category: {
       type: String,
       required: [true, "Please add a category"],

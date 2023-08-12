@@ -10,16 +10,18 @@ const {
   changePassword,
   forgotPassword,
   resetPassword,
+  refreshAccessToken,
 } = require("../controllers/userController");
 const protect = require("../middleWare/authMiddleware");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/logout", logout);
-router.get("/getuser", protect, getUser);
-router.get("/loggedin", loginStatus);
-router.patch("/updateuser", protect, updateUser);
-router.patch("/changepassword", protect, changePassword);
+router.post("/refresh-token", refreshAccessToken);
+router.get("/get-user", protect, getUser);
+router.get("/logged-in", loginStatus);
+router.patch("/update-user", protect, updateUser);
+router.patch("/change-password", protect, changePassword);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:resetToken", resetPassword);
 

@@ -5,10 +5,10 @@ const cloudinary = require("cloudinary").v2;
 
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, sku, category, quantity, price, description } = req.body;
-
+  const { productName, category, quantity, price, description, image } = req.body;
+  
   //   Validation
-  if (!name || !category || !quantity || !price || !description) {
+  if (!productName || !category || !quantity || !price || !description || !image) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
@@ -20,7 +20,7 @@ const createProduct = asyncHandler(async (req, res) => {
     let uploadedFile;
     try {
       uploadedFile = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Pinvent App",
+        folder: "Code Academy Warehouse",
         resource_type: "image",
       });
     } catch (error) {
@@ -39,15 +39,14 @@ const createProduct = asyncHandler(async (req, res) => {
   // Create Product
   const product = await Product.create({
     user: req.user.id,
-    name,
-    sku,
+    productName,
+    // sku,
     category,
     quantity,
     price,
     description,
     image: fileData,
   });
-
   res.status(201).json(product);
 });
 
@@ -92,7 +91,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, category, quantity, price, description } = req.body;
+  const { productName, productImage, category, quantity, price, description, image } = req.body;
   const { id } = req.params;
 
   const product = await Product.findById(id);
@@ -115,7 +114,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     let uploadedFile;
     try {
       uploadedFile = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Pinvent App",
+        folder: "Code Academy Warehouse",
         resource_type: "image",
       });
     } catch (error) {
@@ -135,7 +134,8 @@ const updateProduct = asyncHandler(async (req, res) => {
   const updatedProduct = await Product.findByIdAndUpdate(
     { _id: id },
     {
-      name,
+      productName,
+      productImage,
       category,
       quantity,
       price,

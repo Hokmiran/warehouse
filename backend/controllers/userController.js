@@ -7,8 +7,10 @@ const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 
 // Generate Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+const generateTokens = (id) => {
+  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Access token expires in 1 hour
+  const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }); // Refresh token expires in 7 days
+  return { accessToken, refreshToken };
 };
 
 // Register User
@@ -41,20 +43,11 @@ const registerUser = asyncHandler(async (req, res) => {
     role,
   });
 
-  //   Generate Token
-  const token = generateToken(user._id);
-
-  // Send HTTP-only cookie
-  res.cookie("token", token, {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400), // 1 day
-    sameSite: "none",
-    secure: true,
-  });
+  // Generate Tokens
+  const { accessToken, refreshToken } = generateTokens(user._id);
 
   if (user) {
-    const { _id, name, email,role, photo, phone, bio } = user;
+    const { _id, name, email, role, photo, phone, bio } = user;
     res.status(201).json({
       _id,
       name,
@@ -63,7 +56,8 @@ const registerUser = asyncHandler(async (req, res) => {
       photo,
       phone,
       bio,
-      token,
+      accessToken,
+      refreshToken
     });
   } else {
     res.status(400);
@@ -92,20 +86,9 @@ const loginUser = asyncHandler(async (req, res) => {
   // User exists, check if password is correct
   const passwordIsCorrect = await bcrypt.compare(password, user.password);
 
-  //   Generate Token
-  const token = generateToken(user._id);
-  
-  if(passwordIsCorrect){
-   // Send HTTP-only cookie
-  res.cookie("token", token, {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400), // 1 day
-    sameSite: "none",
-    secure: true,
-  });
-}
+  // Send HTTP-only cookie
   if (user && passwordIsCorrect) {
+    const { accessToken, refreshToken } = generateTokens(user._id);
     const { _id, name, email, role, photo, phone, bio } = user;
     res.status(200).json({
       _id,
@@ -115,7 +98,8 @@ const loginUser = asyncHandler(async (req, res) => {
       photo,
       phone,
       bio,
-      token,
+      accessToken,
+      refreshToken
     });
   } else {
     res.status(400);
@@ -140,7 +124,7 @@ const getUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    const { _id, name, email, roel, photo, phone, bio } = user;
+    const { _id, name, email, role, photo, phone, bio } = user;
     res.status(200).json({
       _id,
       name,
@@ -242,9 +226,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
     await token.deleteOne();
   }
 
-  // Create Reste Token
+  // Create Reset Token
   let resetToken = crypto.randomBytes(32).toString("hex") + user._id;
-  console.log(resetToken);
 
   // Hash token before saving to DB
   const hashedToken = crypto
@@ -291,7 +274,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 const resetPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
   const { resetToken } = req.params;
-
+  
   // Hash token, then compare to Token in DB
   const hashedToken = crypto
     .createHash("sha256")
@@ -303,6 +286,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     token: hashedToken,
     expiresAt: { $gt: Date.now() },
   });
+  console.log(userToken);
 
   if (!userToken) {
     res.status(404);
@@ -318,6 +302,31 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+
+// Refresh Access Token
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    res.status(401);
+    throw new Error('Refresh token not found');
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const { id } = decoded;
+
+    // Generate new access and refresh tokens
+    const newAccessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const newRefreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+
+    res.status(200).json({ accessToken: newAccessToken, refreshToken: newRefreshToken }); // Return the new tokens in the response
+  } catch (error) {
+    res.status(401);
+    throw new Error('Invalid or expired refresh token');
+  }
+});
+
 module.exports = {
   registerUser,
   loginUser,
@@ -328,4 +337,5 @@ module.exports = {
   changePassword,
   forgotPassword,
   resetPassword,
+  refreshAccessToken
 };

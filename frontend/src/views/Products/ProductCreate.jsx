@@ -15,17 +15,17 @@ const ProductCreate = () => {
     price: Yup.number().required("* Price is required!"),
     quantity: Yup.number().required("* Quantity is required!"),
     description: Yup.string().required("* Description is required!"),
-    image: Yup.mixed().required("* Image is required!")
-    .test(
-      "fileType",
-      "* Supported file formats: jpg, jpeg, png, gif",
-      (value) => {
-        if (!value) return false;
+    // image: Yup.mixed().required("* Image is required!")
+    // .test(
+    //   "fileType",
+    //   "* Supported file formats: jpg, jpeg, png, gif",
+    //   (value) => {
+    //     if (!value) return false;
 
-        const supportedFormats = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
-        return supportedFormats.includes(value.type);
-      }
-    ),
+    //     const supportedFormats = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+    //     return supportedFormats.includes(value.type);
+    //   }
+    // ),
   });
 
   const {
@@ -72,13 +72,13 @@ const ProductCreate = () => {
     }
   };
 
-  const [image, setProductImage] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);
+  // const [image, setProductImage] = useState("");
+  // const [imagePreview, setImagePreview] = useState(null);
 
-  const handleImageChange = (e) => {
-    setProductImage(e.target.files[0]);
-    setImagePreview(URL.createObjectURL(e.target.files[0]));
-  };
+  // const handleImageChange = (e) => {
+  //   setProductImage(e.target.files[0]);
+  //   setImagePreview(URL.createObjectURL(e.target.files[0]));
+  // };
 
   return (
     <Layout>
@@ -193,16 +193,16 @@ const ProductCreate = () => {
                       id="image"
                       type="file"
                       className="form-control-file"
-                      onChange={(e) => handleImageChange(e)}
+                      // onChange={(e) => handleImageChange(e)}
                       {...register("image")}
                     />
-                    {imagePreview != null ? (
+                    {/* {imagePreview != null ? (
                       <div className="image-preview">
                         <img src={imagePreview} alt="product" />
                       </div>
                     ) : (
                       <p>No image set for this poduct.</p>
-                    )}
+                    )} */}
                     <span className="error-message">
                       {errors.image?.message}
                     </span>

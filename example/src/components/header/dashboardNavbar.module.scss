@@ -1,0 +1,45 @@
+.gryBoxLocation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.searchBox {
+    display: flex;
+    width: 413px;
+    background: #F5F9FC;
+    border-radius: 33px;
+    position: relative;
+}
+
+@media screen and (max-width: 600px) {
+    .searchBox {
+        width: 150px;
+    }
+
+    .bellIcon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .searchBox {
+        width: 120px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .searchBox {
+        width: 100px;
+    }
+}
+
+.logout{
+        margin-left: 15px;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+        fill: #ff4444;
+}

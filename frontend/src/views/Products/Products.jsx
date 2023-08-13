@@ -1,25 +1,37 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import { privateAxios } from "../../utils/privateAxios";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import NoData from "../../components/lottie/NoData";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
+
 
 function Products() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [list, setList] = useState([]);
-  const getData = async () => {
+  const [isPending, setIsPending] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
+
+
+  // Get all products
+  const getData = async (page) => {
     try {
-      let res = await privateAxios.get(`/products`);
+      let res = await privateAxios.get(`/products?page=${page}`);
 
       setList(res.data);
     } catch (error) {
       setList([]);
+    } finally {
+      setIsPending(false);
     }
   };
-  useEffect(() => {
-    getData();
-  }, []);
 
-  //   modal
+  // Modal
   const [open, setOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState({});
 
@@ -66,7 +78,29 @@ function Products() {
       });
     }
   };
-  console.log(list);
+
+
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0) {
+      setIsPending(true);
+      setCurrentPage(newPage);
+      if (newPage === 0) {
+        navigate("/products");
+      } else {
+        navigate(`/products?page=${newPage + 1}`);
+      }
+      getData(newPage);
+    }
+  };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const pageFromUrl = parseInt(searchParams.get("page")) || 1;
+
+    setCurrentPage(pageFromUrl - 1);
+    getData(pageFromUrl - 1);
+  }, [location.search]);
   return (
     <Layout>
       <div>
@@ -85,80 +119,107 @@ function Products() {
                 New Product
               </Link>
             </div>
-            <table className="mb-0 table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Description</th>
-                  <th style={{ textAlign: "center" }}>
-                    <i className="pe-7s-edit"> </i>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((item, key) => (
-                  <tr key={item?._id}>
-                    <th scope="row">{key + 1}</th>
-                    <td>{item?.productName} </td>
-                    <td>{item?.category} </td>
-                    <td>{item?.price} </td>
-                    <td>{item?.quantity} </td>
-                    <td>{item?.description} </td>
+            {isPending ? (
+              <SkeletonTheme>
+                <Skeleton animation="wave" count={10} />
+              </SkeletonTheme>
 
-                    <td style={{ width: "20%", textAlign: "center" }}>
-                      <div
-                        role="group"
-                        className="btn-group"
-                        data-toggle="buttons"
-                      >
-                        <Link
-                          to={`/pricing/${item?.id}/edit`}
-                          className="btn btn-success"
-                        >
-                          <i
-                            className="fa fa-fw"
-                            aria-hidden="true"
-                            title="Copy to use edit"
-                          >
-                            
-                          </i>
-                        </Link>
-                        <Link
-                          // to={`/pricing/${item?.id}/edit`}
-                          className="btn btn-primary"
-                        >
-                          <i
-                            className="fa fa-eye"
-                            aria-hidden="true"
-                            title="Copy to see product details"
-                          >
-                            
-                          </i>
-                        </Link>
+            ) : list.length > 0 ?
+              <table className="mb-0 table">
 
-                        <button
-                          type="button"
-                          className="btn btn-danger"
-                          onClick={() => openModal(item?._id)}
-                        >
-                          <i
-                            className="fa fa-fw"
-                            aria-hidden="true"
-                            title="Copy to use trash"
-                          >
-                            
-                          </i>
-                        </button>
-                      </div>
-                    </td>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Description</th>
+                    <th style={{ textAlign: "center" }}>
+                      <i className="pe-7s-edit"> </i>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {list.map((item, key) => (
+                    <tr key={item?._id}>
+                      <th scope="row">{key + 1}</th>
+                      <td>{item?.productName} </td>
+                      <td>{item?.category} </td>
+                      <td>{item?.price} </td>
+                      <td>{item?.quantity} </td>
+                      <td>{item?.description} </td>
+
+                      <td style={{ width: "20%", textAlign: "center" }}>
+                        <div
+                          role="group"
+                          className="btn-group"
+                          data-toggle="buttons"
+                        >
+                          <Link
+                            to={`/product/${item?._id}/edit`}
+                            className="btn btn-success"
+                          >
+                            <i
+                              className="fa fa-fw"
+                              aria-hidden="true"
+                              title="Copy to use edit"
+                            >
+                              
+                            </i>
+                          </Link>
+                          <Link
+                            // to={`/pricing/${item?.id}/edit`}
+                            className="btn btn-primary"
+                          >
+                            <i
+                              className="fa fa-eye"
+                              aria-hidden="true"
+                              title="Copy to see product details"
+                            >
+
+                            </i>
+                          </Link>
+
+                          <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={() => openModal(item?._id)}
+                          >
+                            <i
+                              className="fa fa-fw"
+                              aria-hidden="true"
+                              title="Copy to use trash"
+                            >
+                              
+                            </i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+
+                  ))}
+                </tbody>
+              </table>
+              : <NoData />
+            }
+            <div className="d-flex justify-content-center mt-3">
+              <button
+                className="btn btn-primary"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                Previous
+              </button>
+              <button
+                className="btn btn-primary ml-2"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={0 == Math.floor(list.length / itemsPerPage)}
+
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

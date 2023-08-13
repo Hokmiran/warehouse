@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-// import { useSelector, useDispatch } from "react-redux";
 import { privateAxios } from "../../utils/privateAxios";
 
 function Sidebar() {

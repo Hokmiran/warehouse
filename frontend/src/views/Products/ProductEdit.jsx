@@ -13,12 +13,12 @@ function ProductEdit() {
 
   const getDataById = async () => {
     try {
-      const res = await privateAxios.get(`/admin/price/${id}`);
-      let data = res.data.data;
+      const res = await privateAxios.get(`/products/${id}`);
+      let data = res.data;
       delete data.createdDate;
       reset(data);
     } catch (error) {
-      nav("/pricing");
+      nav("/products");
     }
   };
   useEffect(() => {
@@ -28,20 +28,25 @@ function ProductEdit() {
   const [pending, setPending] = useState(false);
 
   const formSchema = Yup.object().shape({
-    price: Yup.number()
-      .typeError("* Rəqəm olmalıdır")
-      .required("* price is required !"),
-    useDayCount: Yup.number()
-      .typeError("* Rəqəm olmalıdır")
-      .required("* useDayCount is required !"),
-    lessonsCount: Yup.number()
-      .typeError("* Rəqəm olmalıdır")
-      .required("* lessonCount is required !"),
-    detail1: Yup.string().required("* Detail is required !"),
-    detail2: Yup.string().required("* Detail is required !"),
-    detail3: Yup.string().required("* Detail is required !"),
-    description: Yup.string().required("* Description is required !"),
+    productName: Yup.string().required("* Product name is required!"),
+    category: Yup.string().required("* Category is required!"),
+    price: Yup.number().required("* Price is required!"),
+    quantity: Yup.number().required("* Quantity is required!"),
+    description: Yup.string().required("* Description is required!"),
+    // image: Yup.mixed().required("* Image is required!")
+    // .test(
+    //   "fileType",
+    //   "* Supported file formats: jpg, jpeg, png, gif",
+    //   (value) => {
+    //     if (!value) return false;
+
+    //     const supportedFormats = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+    //     return supportedFormats.includes(value.type);
+    //   }
+    // ),
   });
+
+
   const {
     register,
     handleSubmit,
@@ -57,8 +62,8 @@ function ProductEdit() {
     if (pending) return;
     setPending(true);
     try {
-      await privateAxios.patch(`/admin/price/${id}`, data);
-      nav("/pricing");
+      await privateAxios.patch(`/products/${id}`, data);
+      nav("/products");
     } catch (error) {
       toast.error(`${error.response.data.message}`, {
         position: "bottom-right",
@@ -79,8 +84,8 @@ function ProductEdit() {
         <div className="main-card mb-3 card">
           <div className="card-body">
             <div className="w-100 d-flex justify-content-between mb-3">
-              <h5 className="card-title">Edit Price</h5>
-              <Link to={"/pricing"} className="btn btn-primary mr-5">
+              <h5 className="card-title">New Product</h5>
+              <Link to={"/products"} className="btn btn-primary mr-5">
                 <i className="fa text-white fa-arrow-left pr-1 pl-1"></i>
                 back
               </Link>
@@ -89,9 +94,39 @@ function ProductEdit() {
               <div className="form-row">
                 <div className="col-md-6">
                   <div className="position-relative form-group">
-                    <label htmlFor="price" className="">
-                      Price
-                    </label>
+                    <label htmlFor="productName">Product Name</label>
+                    <input
+                      name="productName"
+                      id="productName"
+                      placeholder="Product Name"
+                      type="text"
+                      className="form-control"
+                      {...register("productName")}
+                    />
+                    <span className="error-message">
+                      {errors.productName?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="position-relative form-group">
+                    <label htmlFor="category">Category</label>
+                    <input
+                      name="category"
+                      id="category"
+                      placeholder="Category"
+                      type="text"
+                      className="form-control"
+                      {...register("category")}
+                    />
+                    <span className="error-message">
+                      {errors.category?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="position-relative form-group">
+                    <label htmlFor="price">Price</label>
                     <input
                       name="price"
                       id="price"
@@ -100,120 +135,82 @@ function ProductEdit() {
                       className="form-control"
                       {...register("price")}
                     />
+                    <span className="error-message">
+                      {errors.price?.message}
+                    </span>
                   </div>
-                  <span className="error-message">{errors.price?.message}</span>
                 </div>
                 <div className="col-md-6">
                   <div className="position-relative form-group">
-                    <label htmlFor="lessonsCount" className="">
-                      lessonCount
-                    </label>
+                    <label htmlFor="quantity">Quantity</label>
                     <input
-                      name="lessonsCount"
-                      id="lessonsCount"
-                      placeholder="lessonsCount"
+                      name="quantity"
+                      id="quantity"
+                      placeholder="Quantity"
                       type="text"
                       className="form-control"
-                      {...register("lessonsCount")}
+                      {...register("quantity")}
                     />
+                    <span className="error-message">
+                      {errors.quantity?.message}
+                    </span>
                   </div>
+                </div>
+                {/* <div className="col-md-6">
+                <div className="position-relative form-group">
+                  <label htmlFor="sku">SKU</label>
+                  <textarea
+                    className="form-control"
+                    id="sku"
+                    {...register("sku")}
+                  ></textarea>
                   <span className="error-message">
-                    {errors.lessonsCount?.message}
+                    {errors.sku?.message}
                   </span>
                 </div>
+              </div> */}
                 <div className="col-md-6">
                   <div className="position-relative form-group">
-                    <label htmlFor="useDayCount" className="">
-                      useDayCount
-                    </label>
-                    <input
-                      name="useDayCount"
-                      id="useDayCount"
-                      placeholder="useDayCount"
-                      type="text"
-                      className="form-control"
-                      {...register("useDayCount")}
-                    />
-                  </div>
-                  <span className="error-message">
-                    {errors.useDayCount?.message}
-                  </span>
-                </div>
-                <div className="col-md-6">
-                  <div className="position-relative form-group">
-                    <label htmlFor="detail1" className="">
-                      detail1
-                    </label>
-                    <input
-                      name="detail1"
-                      id="detail1"
-                      placeholder="detail1"
-                      type="text"
-                      className="form-control"
-                      {...register("detail1")}
-                    />
-                  </div>
-                  <span className="error-message">
-                    {errors.detail1?.message}
-                  </span>
-                </div>
-                <div className="col-md-6">
-                  <div className="position-relative form-group">
-                    <label htmlFor="detail2" className="">
-                      detail2
-                    </label>
-                    <input
-                      name="detail2"
-                      id="detail2"
-                      placeholder="detail2"
-                      type="text"
-                      className="form-control"
-                      {...register("detail2")}
-                    />
-                  </div>
-                  <span className="error-message">
-                    {errors.detail2?.message}
-                  </span>
-                </div>
-                <div className="col-md-6">
-                  <div className="position-relative form-group">
-                    <label htmlFor="detail3" className="">
-                      detail3
-                    </label>
-                    <input
-                      name="detail3"
-                      id="detail3"
-                      placeholder="detail3"
-                      type="text"
-                      className="form-control"
-                      {...register("detail3")}
-                    />
-                  </div>
-                  <span className="error-message">
-                    {errors.detail3?.message}
-                  </span>
-                </div>
-                <div className="col-md-6">
-                  <div className="position-relative form-group">
-                    <label htmlFor="description" className="">
-                      description
-                    </label>
+                    <label htmlFor="description">Description</label>
                     <textarea
                       className="form-control"
                       id="description"
                       {...register("description")}
                     ></textarea>
+                    <span className="error-message">
+                      {errors.description?.message}
+                    </span>
                   </div>
-                  <span className="error-message">
-                    {errors.description?.message}
-                  </span>
+                </div>
+                {/* Add image upload field */}
+                <div className="col-md-12">
+                  <div className="position-relative form-group">
+                    <label htmlFor="image">Product Image</label>
+                    <input
+                      name="image"
+                      id="image"
+                      type="file"
+                      className="form-control-file"
+                      // onChange={(e) => handleImageChange(e)}
+                      {...register("image")}
+                    />
+                    {/* {imagePreview != null ? (
+                    <div className="image-preview">
+                      <img src={imagePreview} alt="product" />
+                    </div>
+                  ) : (
+                    <p>No image set for this poduct.</p>
+                  )} */}
+                    <span className="error-message">
+                      {errors.image?.message}
+                    </span>
+                  </div>
                 </div>
               </div>
-
               <div className="mt-4 d-flex align-items-center">
                 <div className="ml-auto">
                   <button className="btn btn-primary">
-                    {pending ? "Edit..." : "Edit"}{" "}
+                    {pending ? "Editing..." : "Edit"}{" "}
                   </button>
                 </div>
               </div>

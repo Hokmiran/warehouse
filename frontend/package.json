@@ -10,17 +10,27 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.1.1",
+    "@mui/icons-material": "^5.14.3",
+    "@mui/material": "^5.14.4",
+    "@mui/styled-engine-sc": "^5.12.0",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
+    "loader": "^2.1.1",
+    "lottie-react": "^2.4.0",
     "mem": "^9.0.2",
     "react": "^18.2.0",
+    "react-content": "^0.0.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.1",
+    "react-loading-skeleton": "^3.3.1",
     "react-redux": "^8.1.1",
-    "react-router-dom": "^6.14.1",
+    "react-router-dom": "^6.15.0",
     "react-select": "^5.7.4",
     "react-toastify": "^9.1.3",
+    "styled-components": "^5.3.11",
     "yup": "^1.2.0"
   },
   "devDependencies": {

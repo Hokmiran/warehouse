@@ -50,30 +50,6 @@ let routes = [
     ),
   },
   {
-    path: "/teachers",
-    element: (
-      <Guard>
-        <Teachers />
-      </Guard>
-    ),
-  },
-  {
-    path: "/teachers/requests",
-    element: (
-      <Guard>
-        <TeacherRequests />
-      </Guard>
-    ),
-  },
-  {
-    path: "/teachers/:id/edit",
-    element: (
-      <Guard>
-        <TeacherEdit />
-      </Guard>
-    ),
-  },
-  {
     path: "/products",
     element: (
       <Guard>
@@ -97,7 +73,30 @@ let routes = [
       </Guard>
     ),
   },
-
+  {
+    path: "/teachers",
+    element: (
+      <Guard>
+        <Teachers />
+      </Guard>
+    ),
+  },
+  {
+    path: "/teachers/requests",
+    element: (
+      <Guard>
+        <TeacherRequests />
+      </Guard>
+    ),
+  },
+  {
+    path: "/teachers/:id/edit",
+    element: (
+      <Guard>
+        <TeacherEdit />
+      </Guard>
+    ),
+  },
   {
     path: "/lessons",
     element: (

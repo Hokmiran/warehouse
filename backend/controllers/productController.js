@@ -6,7 +6,7 @@ const cloudinary = require("cloudinary").v2;
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
   const { productName, category, quantity, price, description, image } = req.body;
-  
+
   //   Validation
   if (!productName || !category || !quantity || !price || !description || !image) {
     res.status(400);
@@ -52,13 +52,22 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Get all Products
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({ user: req.user.id }).sort("-createdAt");
+
+  const page = parseInt(req.query.page) || 0;
+  const productsPerPage = 10;
+
+  const products = await Product.find({ user: req.user.id })
+    .sort("-createdAt")
+    .skip(page * productsPerPage)
+    .limit(productsPerPage);
   res.status(200).json(products);
+
 });
 
 // Get single product
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
+
   // if product doesnt exist
   if (!product) {
     res.status(404);

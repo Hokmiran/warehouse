@@ -1,12 +1,8 @@
-import React, { useEffect } from "react";
-
 import { useSelector, useDispatch } from "react-redux";
 import { setToggle } from "../../store/site";
 import { deAuthenticate } from "../../store/auth";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const nav = useNavigate();
   const dispatch = useDispatch();
   const { toggle } = useSelector((state) => state.site);
 
@@ -23,9 +19,8 @@ const Header = () => {
             <button
               type="button"
               onClick={() => dispatch(setToggle())}
-              className={`hamburger close-sidebar-btn hamburger--elastic ${
-                toggle ? " is-active" : ""
-              }`}
+              className={`hamburger close-sidebar-btn hamburger--elastic ${toggle ? " is-active" : ""
+                }`}
               data-class="closed-sidebar"
             >
               <span className="hamburger-box">
@@ -71,7 +66,7 @@ const Header = () => {
                     className="btn-shadow p-1 btn btn-primary btn-sm show-toastr-example"
                   >
                     <i className="fa text-white fa-arrow-left pr-1 pl-1"></i>
-                    Çıxış
+                    Logout
                   </button>
                 </div>
               </div>

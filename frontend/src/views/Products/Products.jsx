@@ -80,7 +80,7 @@ function Products() {
   };
 
 
-
+  // Pagination
   const handlePageChange = (newPage) => {
     if (newPage >= 0) {
       setIsPending(true);
@@ -101,6 +101,7 @@ function Products() {
     setCurrentPage(pageFromUrl - 1);
     getData(pageFromUrl - 1);
   }, [location.search]);
+
   return (
     <Layout>
       <div>
@@ -148,6 +149,8 @@ function Products() {
                       <td>{item?.category} </td>
                       <td>{item?.price} </td>
                       <td>{item?.quantity} </td>
+                      <td><img src={item?.image}/></td>
+                      {console.log(item.image, 'jnjnefejngejn')}
                       <td>{item?.description} </td>
 
                       <td style={{ width: "20%", textAlign: "center" }}>
@@ -214,7 +217,7 @@ function Products() {
               <button
                 className="btn btn-primary ml-2"
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={0 == Math.floor(list.length / itemsPerPage)}
+                disabled={0 == Math.floor(list.length / itemsPerPage) || list.length < itemsPerPage}
 
               >
                 Next

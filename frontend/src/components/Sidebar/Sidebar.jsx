@@ -119,9 +119,15 @@ function Sidebar() {
               </a>
               <ul
                 className={
-                  toggle.first ? "mm-collapse" : "mm-collapse mm-show "
+                  toggle.first ? "mm-collapse" : "mm-collapse mm-show"
                 }
               >
+                <li>
+                  <NavLink to="/add-user">
+                    <i className="metismenu-icon"></i>
+                    Add User
+                  </NavLink>
+                </li>
                 <li>
                   <NavLink to="/teachers">
                     <i className="metismenu-icon"></i>
@@ -155,7 +161,7 @@ function Sidebar() {
                 href="#"
                 className={
                   loc.pathname.includes("contact") &&
-                  !loc.pathname.includes("contact-us")
+                    !loc.pathname.includes("contact-us")
                     ? "mm-active"
                     : ""
                 }

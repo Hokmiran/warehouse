@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import { privateAxios } from "../../utils/privateAxios";
 import Pagination from "../../components/Pagination/Pagination";

@@ -3,14 +3,13 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup.js";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/Layout/Layout";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { privateAxios } from "../../utils/privateAxios";
 
 function ProductEdit() {
   const nav = useNavigate();
   const { id } = useParams();
-
   const getDataById = async () => {
     try {
       const res = await privateAxios.get(`/products/${id}`);
@@ -63,7 +62,7 @@ function ProductEdit() {
     setPending(true);
     try {
       await privateAxios.patch(`/products/${id}`, data);
-      nav("/products");
+      nav(-1);
     } catch (error) {
       toast.error(`${error.response.data.message}`, {
         position: "bottom-right",
@@ -84,11 +83,11 @@ function ProductEdit() {
         <div className="main-card mb-3 card">
           <div className="card-body">
             <div className="w-100 d-flex justify-content-between mb-3">
-              <h5 className="card-title">New Product</h5>
-              <Link to={"/products"} className="btn btn-primary mr-5">
+              <h5 className="card-title">Edit Product</h5>
+              <button onClick={() => nav(-1)} className="btn btn-primary mr-5">
                 <i className="fa text-white fa-arrow-left pr-1 pl-1"></i>
-                back
-              </Link>
+                Back
+              </button>
             </div>
             <form className="w-100" onSubmit={handleSubmit(postData)}>
               <div className="form-row">

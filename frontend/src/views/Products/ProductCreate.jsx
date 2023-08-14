@@ -5,7 +5,8 @@ import { privateAxios } from "../../utils/privateAxios";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ProductCreate = () => {
 
@@ -38,6 +39,7 @@ const ProductCreate = () => {
     resolver: yupResolver(formSchema),
   });
 
+  const nav = useNavigate();
   const [pending, setPending] = useState(false);
 
   const postData = async (data) => {
@@ -87,10 +89,10 @@ const ProductCreate = () => {
           <div className="card-body">
             <div className="w-100 d-flex justify-content-between mb-3">
               <h5 className="card-title">New Product</h5>
-              <Link to={"/products"} className="btn btn-primary mr-5">
+              <button onClick={() => nav(-1)} className="btn btn-primary mr-5">
                 <i className="fa text-white fa-arrow-left pr-1 pl-1"></i>
-                back
-              </Link>
+                Back
+              </button>
             </div>
             <form className="w-100" onSubmit={handleSubmit(postData)}>
               <div className="form-row">

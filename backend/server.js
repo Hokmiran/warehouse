@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./routes/userRoute");
+const employeeRoute = require("./routes/employeeRoute");
+const positionRoute = require("./routes/positionRoute");
+const productTransactionRoute = require("./routes/productTransactionRoute");
+const productCategoryRoute = require("./routes/productCategoryRoute");
 const productRoute = require("./routes/productRoute");
 const departmentRoute = require("./routes/departmentRoute");
 const purchaseRequestRoute = require("./routes/purchaseRequestRoute");
@@ -25,6 +29,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes Middleware
 app.use("/users", userRoute);
+app.use("/employee", employeeRoute);
+app.use("/positions", positionRoute);
+app.use("/products", productCategoryRoute);
+app.use("/products", productTransactionRoute);
 app.use("/products", productRoute);
 app.use('/departments', departmentRoute);
 app.use('/purchase-requests', purchaseRequestRoute);

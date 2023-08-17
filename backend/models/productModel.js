@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const productSchema = mongoose.Schema(
   {
@@ -19,9 +20,9 @@ const productSchema = mongoose.Schema(
     //   trim: true,
     // },
     category: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'ProductCategory',
       required: [true, "Please add a category"],
-      trim: true,
     },
     quantity: {
       type: String,
@@ -29,7 +30,7 @@ const productSchema = mongoose.Schema(
       trim: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: [true, "Please add a price"],
       trim: true,
     },
@@ -41,6 +42,8 @@ const productSchema = mongoose.Schema(
     image: {
       type: Object,
       default: {},
+      required: [true, "Please add an image"],
+      trim: true,
     },
   },
   {

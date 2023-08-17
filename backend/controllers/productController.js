@@ -3,12 +3,18 @@ const Product = require("../models/productModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
-  const { productName, category, quantity, price, description, image } = req.body;
+  const { productName, category, quantity, price, description } = req.body;
 
   //   Validation
-  if (!productName || !category || !quantity || !price || !description || !image) {
+  if (!productName || !category || !quantity || !price || !description) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
@@ -49,6 +55,8 @@ const createProduct = asyncHandler(async (req, res) => {
   });
   res.status(201).json(product);
 });
+
+
 
 // Get all Products
 const getProducts = asyncHandler(async (req, res) => {
@@ -167,3 +175,4 @@ module.exports = {
   deleteProduct,
   updateProduct,
 };
+

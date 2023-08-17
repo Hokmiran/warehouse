@@ -22,7 +22,7 @@ function Products() {
   const getData = async (page) => {
     try {
       let res = await privateAxios.get(`/products?page=${page}`);
-
+      console.log(res.data.error, 'errrrrrrrrrrrr');
       setList(res.data);
     } catch (error) {
       setList([]);
@@ -101,7 +101,7 @@ function Products() {
     setCurrentPage(pageFromUrl - 1);
     getData(pageFromUrl - 1);
   }, [location.search]);
-
+  console.log(list);
   return (
     <Layout>
       <div>
@@ -135,6 +135,7 @@ function Products() {
                     <th>Category</th>
                     <th>Price</th>
                     <th>Quantity</th>
+                    <th>Image</th>
                     <th>Description</th>
                     <th style={{ textAlign: "center" }}>
                       <i className="pe-7s-edit"> </i>
@@ -149,10 +150,8 @@ function Products() {
                       <td>{item?.category} </td>
                       <td>{item?.price} </td>
                       <td>{item?.quantity} </td>
-                      <td><img src={item?.image}/></td>
-                      {console.log(item.image, 'jnjnefejngejn')}
+                      <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
                       <td>{item?.description} </td>
-
                       <td style={{ width: "20%", textAlign: "center" }}>
                         <div
                           role="group"

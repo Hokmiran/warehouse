@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import { privateAxios } from "../../utils/privateAxios";
@@ -13,20 +13,10 @@ const ProductCreate = () => {
   const formSchema = Yup.object().shape({
     productName: Yup.string().required("* Product name is required!"),
     category: Yup.string().required("* Category is required!"),
-    price: Yup.number().required("* Price is required!"),
+    price: Yup.string().required("* Price is required!"),
     quantity: Yup.number().required("* Quantity is required!"),
     description: Yup.string().required("* Description is required!"),
-    // image: Yup.mixed().required("* Image is required!")
-    // .test(
-    //   "fileType",
-    //   "* Supported file formats: jpg, jpeg, png, gif",
-    //   (value) => {
-    //     if (!value) return false;
-
-    //     const supportedFormats = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
-    //     return supportedFormats.includes(value.type);
-    //   }
-    // ),
+    
   });
 
   const {
@@ -41,12 +31,21 @@ const ProductCreate = () => {
 
   const nav = useNavigate();
   const [pending, setPending] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const postData = async (data) => {
     if (pending) return;
     setPending(true);
     try {
-      await privateAxios.post("/products/create", data);
+      const formData = new FormData();
+      formData.append("productName", data.productName);
+      formData.append("category", data.category);
+      formData.append("price", data.price);
+      formData.append("quantity", data.quantity);
+      formData.append("description", data.description);
+      formData.append("image", selectedImage);
+
+      await privateAxios.post("/products/create", formData);
       toast.success(`Product created successfully`, {
         position: "bottom-right",
         autoClose: 3000,
@@ -74,13 +73,14 @@ const ProductCreate = () => {
     }
   };
 
-  // const [image, setProductImage] = useState("");
-  // const [imagePreview, setImagePreview] = useState(null);
+  const handleImageChange = (e) => {
+    setSelectedImage(e.target.files[0]);
+    console.log(selectedImage);
+  };
 
-  // const handleImageChange = (e) => {
-  //   setProductImage(e.target.files[0]);
-  //   setImagePreview(URL.createObjectURL(e.target.files[0]));
-  // };
+  useEffect(() => {
+    console.log("Selected Image:", selectedImage);
+  }, [selectedImage]);
 
   return (
     <Layout>
@@ -195,19 +195,22 @@ const ProductCreate = () => {
                       id="image"
                       type="file"
                       className="form-control-file"
-                      // onChange={(e) => handleImageChange(e)}
-                      {...register("image")}
+                      onChange={(e) => {
+                        handleImageChange(e);
+                      }}
                     />
-                    {/* {imagePreview != null ? (
-                      <div className="image-preview">
-                        <img src={imagePreview} alt="product" />
-                      </div>
-                    ) : (
-                      <p>No image set for this poduct.</p>
-                    )} */}
                     <span className="error-message">
-                      {errors.image?.message}
+                      {console.log(errors.image?.message)}
                     </span>
+                    {selectedImage && (
+                      <div className="image-preview">
+                        <img
+                          src={URL.createObjectURL(selectedImage)}
+                          alt="product"
+                          style={{ maxWidth: "100%", height: "auto" }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

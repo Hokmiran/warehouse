@@ -81,7 +81,17 @@ function Sidebar() {
                 Dashboard
               </NavLink>
             </li>
-
+            <li>
+              <NavLink
+                to="/products-category"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "mm-active" : ""
+                }
+              >
+                <i className="metismenu-icon pe-7s-diamond"></i>
+                Products Category
+              </NavLink>
+            </li>
             <li>
               <NavLink
                 to="/products"

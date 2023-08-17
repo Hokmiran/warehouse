@@ -22,6 +22,7 @@
     "loader": "^2.1.1",
     "lottie-react": "^2.4.0",
     "mem": "^9.0.2",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-content": "^0.0.1",
     "react-dom": "^18.2.0",

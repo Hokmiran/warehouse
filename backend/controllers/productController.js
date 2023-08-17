@@ -64,7 +64,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 0;
   const productsPerPage = 10;
 
-  const products = await Product.find({ user: req.user.id })
+  const products = await Product.find({ user: req.user.id }).populate('category', 'name')
     .sort("-createdAt")
     .skip(page * productsPerPage)
     .limit(productsPerPage);
@@ -74,7 +74,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // Get single product
 const getProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate('category', 'name');
 
   // if product doesnt exist
   if (!product) {

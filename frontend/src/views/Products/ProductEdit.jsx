@@ -10,41 +10,52 @@ import { privateAxios } from "../../utils/privateAxios";
 function ProductEdit() {
   const nav = useNavigate();
   const { id } = useParams();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  
+  const [pending, setPending] = useState(false);
+
+  const formSchema = Yup.object().shape({
+    price: Yup.number().required("* Price must be number!"),
+    quantity: Yup.number().required("* Quantity must be number!"),
+  });
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await privateAxios.get("/products/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    }
+    fetchCategories();
+  }, []);
+
+
   const getDataById = async () => {
     try {
       const res = await privateAxios.get(`/products/${id}`);
       let data = res.data;
       delete data.createdDate;
-      reset(data);
+      console.log(data);
+      reset({
+      productName: data.productName,
+      category: data.category._id,
+      price: data.price,
+      quantity: data.quantity,
+      description: data.description,
+      image: data.image?.fileName
+    });
     } catch (error) {
       nav("/products");
     }
+
   };
   useEffect(() => {
     getDataById();
   }, [id]);
-
-  const [pending, setPending] = useState(false);
-
-  const formSchema = Yup.object().shape({
-    productName: Yup.string().required("* Product name is required!"),
-    category: Yup.string().required("* Category is required!"),
-    price: Yup.number().required("* Price is required!"),
-    quantity: Yup.number().required("* Quantity is required!"),
-    description: Yup.string().required("* Description is required!"),
-    // image: Yup.mixed().required("* Image is required!")
-    // .test(
-    //   "fileType",
-    //   "* Supported file formats: jpg, jpeg, png, gif",
-    //   (value) => {
-    //     if (!value) return false;
-
-    //     const supportedFormats = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
-    //     return supportedFormats.includes(value.type);
-    //   }
-    // ),
-  });
-
 
   const {
     register,
@@ -53,7 +64,6 @@ function ProductEdit() {
     reset,
   } = useForm({
     mode: "onTouched",
-
     resolver: yupResolver(formSchema),
   });
 
@@ -76,7 +86,17 @@ function ProductEdit() {
       });
       setPending(false);
     }
+    console.log(data);
   };
+
+  const handleImageChange = (e) => {
+    setSelectedImage(e.target.files[0]);
+    console.log(selectedImage, 'jfeif');
+  };
+
+  useEffect(() => {
+  }, [selectedImage]);
+
   return (
     <Layout>
       <div>
@@ -102,22 +122,24 @@ function ProductEdit() {
                       className="form-control"
                       {...register("productName")}
                     />
-                    <span className="error-message">
-                      {errors.productName?.message}
-                    </span>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="position-relative form-group">
                     <label htmlFor="category">Category</label>
-                    <input
+                    <select
                       name="category"
                       id="category"
-                      placeholder="Category"
-                      type="text"
                       className="form-control"
                       {...register("category")}
-                    />
+                    >
+                      <option value="">Select a category</option>
+                      {categories.map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
                     <span className="error-message">
                       {errors.category?.message}
                     </span>
@@ -155,19 +177,6 @@ function ProductEdit() {
                     </span>
                   </div>
                 </div>
-                {/* <div className="col-md-6">
-                <div className="position-relative form-group">
-                  <label htmlFor="sku">SKU</label>
-                  <textarea
-                    className="form-control"
-                    id="sku"
-                    {...register("sku")}
-                  ></textarea>
-                  <span className="error-message">
-                    {errors.sku?.message}
-                  </span>
-                </div>
-              </div> */}
                 <div className="col-md-6">
                   <div className="position-relative form-group">
                     <label htmlFor="description">Description</label>
@@ -176,9 +185,6 @@ function ProductEdit() {
                       id="description"
                       {...register("description")}
                     ></textarea>
-                    <span className="error-message">
-                      {errors.description?.message}
-                    </span>
                   </div>
                 </div>
                 {/* Add image upload field */}
@@ -190,19 +196,22 @@ function ProductEdit() {
                       id="image"
                       type="file"
                       className="form-control-file"
-                      // onChange={(e) => handleImageChange(e)}
-                      {...register("image")}
+                      onChange={(e) => {
+                        handleImageChange(e);
+                      }}
                     />
-                    {/* {imagePreview != null ? (
-                    <div className="image-preview">
-                      <img src={imagePreview} alt="product" />
-                    </div>
-                  ) : (
-                    <p>No image set for this poduct.</p>
-                  )} */}
                     <span className="error-message">
                       {errors.image?.message}
                     </span>
+                    {selectedImage && (
+                      <div className="image-preview">
+                        <img
+                          src={URL.createObjectURL(selectedImage)}
+                          alt="product"
+                          style={{ maxWidth: "100%", height: "auto" }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

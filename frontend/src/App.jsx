@@ -25,6 +25,7 @@ import ContactUs from "./views/Content/ContactUs";
 import ForgotPassword from "./views/forgot/ForgotPassword";
 import ResetPassword from "./views/reset/ResetPassword";
 import AddUser from "./views/Teachers/AddUser";
+import ProductCategory from "./views/Products/ProductCategory";
 
 const Login = lazy(() => import("./views/Login/Login"));
 const Dashboard = lazy(() => import("./views/Dashboard/Dashboard"));
@@ -47,6 +48,14 @@ let routes = [
     element: (
       <Guard>
         <Dashboard />
+      </Guard>
+    ),
+  },
+  {
+    path: "/products-category",
+    element: (
+      <Guard>
+        <ProductCategory />
       </Guard>
     ),
   },

@@ -5,7 +5,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import NoData from "../../components/lottie/NoData";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
+import 'react-loading-skeleton/dist/skeleton.css';
+import moment from "moment";
 
 
 
@@ -22,8 +23,11 @@ function Products() {
   const getData = async (page) => {
     try {
       let res = await privateAxios.get(`/products?page=${page}`);
-      console.log(res.data.error, 'errrrrrrrrrrrr');
-      setList(res.data);
+      const transformedData = res.data.map(item => ({
+        ...item,
+        category: item.category.name
+      }));
+      setList(transformedData);
     } catch (error) {
       setList([]);
     } finally {
@@ -101,7 +105,7 @@ function Products() {
     setCurrentPage(pageFromUrl - 1);
     getData(pageFromUrl - 1);
   }, [location.search]);
-  console.log(list);
+
   return (
     <Layout>
       <div>
@@ -137,6 +141,7 @@ function Products() {
                     <th>Quantity</th>
                     <th>Image</th>
                     <th>Description</th>
+                    <th>Created At</th>
                     <th style={{ textAlign: "center" }}>
                       <i className="pe-7s-edit"> </i>
                     </th>
@@ -152,6 +157,7 @@ function Products() {
                       <td>{item?.quantity} </td>
                       <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
                       <td>{item?.description} </td>
+                      <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
                       <td style={{ width: "20%", textAlign: "center" }}>
                         <div
                           role="group"

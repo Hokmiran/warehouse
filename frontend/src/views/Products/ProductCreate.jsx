@@ -16,7 +16,8 @@ const ProductCreate = () => {
     price: Yup.string().required("* Price is required!"),
     quantity: Yup.number().required("* Quantity is required!"),
     description: Yup.string().required("* Description is required!"),
-    
+    // image: Yup.mixed().required("* Image is required!"),
+
   });
 
   const {
@@ -32,6 +33,19 @@ const ProductCreate = () => {
   const nav = useNavigate();
   const [pending, setPending] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await privateAxios.get("/products/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const postData = async (data) => {
     if (pending) return;
@@ -75,11 +89,10 @@ const ProductCreate = () => {
 
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
-    console.log(selectedImage);
+    console.log(selectedImage, 'jfeif');
   };
 
   useEffect(() => {
-    console.log("Selected Image:", selectedImage);
   }, [selectedImage]);
 
   return (
@@ -115,14 +128,19 @@ const ProductCreate = () => {
                 <div className="col-md-6">
                   <div className="position-relative form-group">
                     <label htmlFor="category">Category</label>
-                    <input
+                    <select
                       name="category"
                       id="category"
-                      placeholder="Category"
-                      type="text"
                       className="form-control"
                       {...register("category")}
-                    />
+                    >
+                      <option value="">Select a category</option>
+                      {categories.map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
                     <span className="error-message">
                       {errors.category?.message}
                     </span>
@@ -200,7 +218,7 @@ const ProductCreate = () => {
                       }}
                     />
                     <span className="error-message">
-                      {console.log(errors.image?.message)}
+                      {errors.image?.message}
                     </span>
                     {selectedImage && (
                       <div className="image-preview">

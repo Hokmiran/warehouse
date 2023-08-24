@@ -10,7 +10,6 @@ import Products from "./views/Products/Products";
 import ProductCreate from "./views/Products/ProductCreate";
 import ProductEdit from "./views/Products/ProductEdit";
 import TeacherRequests from "./views/Teachers/TeacherRequests";
-import Lessons from "./views/Lessons/Lessons";
 import LessonCreate from "./views/Lessons/LessonCreate";
 import LessonEdit from "./views/Lessons/LessonEdit";
 import Contact from "./views/Contact/Contact";
@@ -25,7 +24,9 @@ import ContactUs from "./views/Content/ContactUs";
 import ForgotPassword from "./views/forgot/ForgotPassword";
 import ResetPassword from "./views/reset/ResetPassword";
 import AddUser from "./views/Teachers/AddUser";
+import CategoryList from "./views/Products/CategoryList";
 import ProductCategory from "./views/Products/ProductCategory";
+import Department from "./views/Department/Department";
 
 const Login = lazy(() => import("./views/Login/Login"));
 const Dashboard = lazy(() => import("./views/Dashboard/Dashboard"));
@@ -55,7 +56,15 @@ let routes = [
     path: "/products-category",
     element: (
       <Guard>
-        <ProductCategory />
+        <CategoryList />
+      </Guard>
+    ),
+  },
+  {
+    path: "/products-category/:id",
+    element: (
+      <Guard>
+        < ProductCategory />
       </Guard>
     ),
   },
@@ -116,10 +125,10 @@ let routes = [
     ),
   },
   {
-    path: "/lessons",
+    path: "/department",
     element: (
       <Guard>
-        <Lessons />
+        <Department />
       </Guard>
     ),
   },

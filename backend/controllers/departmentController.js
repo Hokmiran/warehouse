@@ -1,18 +1,20 @@
 const asyncHandler = require("express-async-handler");
 const Department = require('../models/departmentModel');
+const mongoose = require("mongoose");
 
-// Yeni departman oluşturma
+// Create Department
 const createDepartment = asyncHandler(async (req, res) => {
   try {
-    const { name, createdBy } = req.body;
-    const department = await Department.create({ name, createdBy });
+    const { name } = req.body;
+
+    const department = await Department.create({ name, createdBy: req.user.id });
     res.status(201).json(department);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Tüm departmanları listeleme
+// Get All Departments
 const getDepartment = asyncHandler(async (req, res) => {
   try {
     const departments = await Department.find();
@@ -22,7 +24,30 @@ const getDepartment = asyncHandler(async (req, res) => {
   }
 });
 
-// Belirli bir departmanı güncelleme
+
+// Get single department
+const getSingleDepartment = asyncHandler(async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id);
+
+    if (!department) {
+      res.status(404);
+      throw new Error("Department not found");
+    }
+
+    res.status(200).json(department);
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      // Handle the case where the provided ID is not in a valid format
+      res.status(404).json({ message: "Invalid department ID" });
+    } else {
+      // Handle other Mongoose-related errors
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+});
+
+// Update Department
 const updateDepartment = asyncHandler(async (req, res) => {
   try {
     const { name } = req.body;
@@ -32,7 +57,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
       { new: true }
     );
     if (!updatedDepartment) {
-      return res.status(404).json({ message: 'Departman bulunamadı' });
+      return res.status(404).json({ message: 'Cannot find department' });
     }
     res.json(updatedDepartment);
   } catch (error) {
@@ -40,14 +65,14 @@ const updateDepartment = asyncHandler(async (req, res) => {
   }
 });
 
-// Belirli bir departmanı silme
+// Delete Department
 const deleteDepartment = asyncHandler(async (req, res) => {
   try {
     const deletedDepartment = await Department.findByIdAndDelete(req.params.id);
     if (!deletedDepartment) {
-      return res.status(404).json({ message: 'Departman bulunamadı' });
+      return res.status(404).json({ message: 'Cannot find department' });
     }
-    res.json({ message: 'Departman başarıyla silindi' });
+    res.json({ message: 'Department has been deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -57,5 +82,6 @@ module.exports = {
   createDepartment,
   getDepartment,
   updateDepartment,
-  deleteDepartment
+  deleteDepartment,
+  getSingleDepartment
 };

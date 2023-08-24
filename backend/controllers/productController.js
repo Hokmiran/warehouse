@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
+const { ObjectId } = require('mongodb');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -64,7 +65,20 @@ const getProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 0;
   const productsPerPage = 10;
 
-  const products = await Product.find({ user: req.user.id }).populate('category', 'name')
+  const products = await Product.find().populate('category', 'name')
+    .sort("-createdAt")
+    .skip(page * productsPerPage)
+    .limit(productsPerPage);
+  res.status(200).json(products);
+
+});
+
+// Get all Products
+const getProductsByCategory = asyncHandler(async (req, res) => {
+
+  const page = parseInt(req.query.page) || 0;
+  const productsPerPage = 10;
+  const products = await Product.find({ category: ObjectId(req.params.category) }).populate('category', 'name')
     .sort("-createdAt")
     .skip(page * productsPerPage)
     .limit(productsPerPage);
@@ -171,6 +185,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 module.exports = {
   createProduct,
   getProducts,
+  getProductsByCategory,
   getProduct,
   deleteProduct,
   updateProduct,

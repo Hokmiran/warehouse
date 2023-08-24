@@ -105,13 +105,13 @@ function Sidebar() {
             </li>
             <li>
               <NavLink
-                to="/lessons"
+                to="/department"
                 className={({ isActive, isPending }) =>
                   isPending ? "pending" : isActive ? "mm-active" : ""
                 }
               >
                 <i className="metismenu-icon pe-7s-notebook"></i>
-                Lessons
+                Department
               </NavLink>
             </li>
 

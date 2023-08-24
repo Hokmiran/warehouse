@@ -89,7 +89,6 @@ const ProductCreate = () => {
 
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
-    console.log(selectedImage, 'jfeif');
   };
 
   useEffect(() => {

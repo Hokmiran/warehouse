@@ -39,7 +39,6 @@ function ProductEdit() {
       const res = await privateAxios.get(`/products/${id}`);
       let data = res.data;
       delete data.createdDate;
-      console.log(data);
       reset({
       productName: data.productName,
       category: data.category._id,
@@ -86,12 +85,10 @@ function ProductEdit() {
       });
       setPending(false);
     }
-    console.log(data);
   };
 
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
-    console.log(selectedImage, 'jfeif');
   };
 
   useEffect(() => {

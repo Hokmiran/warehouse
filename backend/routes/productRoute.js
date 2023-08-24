@@ -7,10 +7,12 @@ const {
   getProduct,
   deleteProduct,
   updateProduct,
+  getProductsByCategory,
 } = require("../controllers/productController");
 const { upload } = require("../utils/fileUpload");
 
 router.post("/create", protect, upload.single("image"), createProduct);
+router.get("/category/:category", protect, getProductsByCategory);
 router.patch("/:id", protect, upload.single("image"), updateProduct);
 router.get("/", protect, getProducts);
 router.get("/:id", protect, getProduct);

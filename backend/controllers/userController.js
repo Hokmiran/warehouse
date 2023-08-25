@@ -286,7 +286,6 @@ const resetPassword = asyncHandler(async (req, res) => {
     token: hashedToken,
     expiresAt: { $gt: Date.now() },
   });
-  console.log(userToken);
 
   if (!userToken) {
     res.status(404);

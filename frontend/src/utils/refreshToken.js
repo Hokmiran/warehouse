@@ -9,7 +9,6 @@ const refreshTokenFn = async () => {
       const response = await publicAxios.post("/users/refresh-token", {
         token: token,
       });
-      console.log(response);
 
       const accessToken = await response.data.data.accessToken;
       const refreshToken = await response.data.data.refreshToken;

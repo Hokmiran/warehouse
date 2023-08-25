@@ -1,4 +1,5 @@
 const Employee = require('../models/employeeModel');
+const mongoose = require("mongoose");
 
 exports.createEmployee = async (req, res) => {
   try {
@@ -12,8 +13,8 @@ exports.createEmployee = async (req, res) => {
 
 exports.getAllEmployees = async (req, res) => {
   try {
-    const employees = await Employee.find();
-    res.send(employees);
+    const employees = await Employee.find().populate('department position');
+    res.status(200).json(employees);
   } catch (error) {
     res.status(500).send(error);
   }

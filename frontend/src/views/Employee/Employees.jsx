@@ -10,7 +10,7 @@ import moment from "moment";
 
 
 
-function Positions() {
+function Employees() {
     const navigate = useNavigate();
     const location = useLocation();
     const [list, setList] = useState([]);
@@ -22,10 +22,11 @@ function Positions() {
     // Get all products
     const getData = async (page) => {
         try {
-            let res = await privateAxios.get(`/positions?page=${page}`);
+            let res = await privateAxios.get(`/employees?page=${page}`);
             const transformedData = res.data.map(item => ({
                 ...item,
-                title: item.title
+                department: item.department.name,
+                position: item.position.title
             }));
             setList(transformedData);
         } catch (error) {
@@ -53,13 +54,13 @@ function Positions() {
     //   delete item
     const deleteItem = async () => {
         try {
-            await privateAxios.delete(`/positions/${modalDetails?._id}`);
+            await privateAxios.delete(`/employees/${modalDetails?._id}`);
 
             setList(list.filter((e) => e._id !== modalDetails?._id));
 
             closeModal();
 
-            toast.success(`Position deleted successfully`, {
+            toast.success(`Employee deleted successfully`, {
                 position: "bottom-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -90,9 +91,9 @@ function Positions() {
             setIsPending(true);
             setCurrentPage(newPage);
             if (newPage === 0) {
-                navigate("/positions");
+                navigate("/employees");
             } else {
-                navigate(`/positions?page=${newPage + 1}`);
+                navigate(`/employees?page=${newPage + 1}`);
             }
             getData(newPage);
         }
@@ -112,8 +113,8 @@ function Positions() {
                 <div className="main-card mb-3 card">
                     <div className="card-body">
                         <div className="w-100 d-flex justify-content-between mb-3">
-                            <h5 className="card-title">Positions</h5>
-                            <Link to={"/position/create"} className="btn btn-primary mr-5">
+                            <h5 className="card-title">Employees</h5>
+                            <Link to={"/employee/create"} className="btn btn-primary mr-5">
                                 <i
                                     className="fa fa-fw"
                                     aria-hidden="true"
@@ -121,7 +122,7 @@ function Positions() {
                                 >
                                     
                                 </i>
-                                New Position
+                                New Employee
                             </Link>
                         </div>
                         {isPending ? (
@@ -135,7 +136,9 @@ function Positions() {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Title</th>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>Position</th>
                                         <th>Created At</th>
                                         <th style={{ textAlign: "center" }}>
                                             <i className="pe-7s-edit"> </i>
@@ -146,7 +149,9 @@ function Positions() {
                                     {list.map((item, key) => (
                                         <tr key={item?._id}>
                                             <th scope="row">{key + 1}</th>
-                                            <td>{item?.title} </td>
+                                            <td>{item?.name} </td>
+                                            <td>{item?.department} </td>
+                                            <td>{item?.position} </td>
                                             <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
                                             <td style={{ width: "20%", textAlign: "center" }}>
                                                 <div
@@ -155,9 +160,8 @@ function Positions() {
                                                     data-toggle="buttons"
                                                 >
                                                     <Link
-                                                        to={`/position/${item?._id}/edit`}
+                                                        to={`/employee/${item?._id}/edit`}
                                                         className="btn btn-success"
-                                                        
                                                     >
                                                         <i
                                                             className="fa fa-fw"
@@ -167,6 +171,19 @@ function Positions() {
                                                             
                                                         </i>
                                                     </Link>
+                                                    <Link
+                                                        // to={`/pricing/${item?.id}/edit`}
+                                                        className="btn btn-primary"
+                                                    >
+                                                        <i
+                                                            className="fa fa-eye"
+                                                            aria-hidden="true"
+                                                            title="Copy to see product details"
+                                                        >
+
+                                                        </i>
+                                                    </Link>
+
                                                     <button
                                                         type="button"
                                                         className="btn btn-danger"
@@ -253,4 +270,4 @@ function Positions() {
     );
 }
 
-export default Positions;
+export default Employees;

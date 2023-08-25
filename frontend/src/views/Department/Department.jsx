@@ -159,7 +159,6 @@ function Departments() {
                                                         className="btn btn-success"
                                                         
                                                     >
-                                                        {console.log(item?._id)}
                                                         <i
                                                             className="fa fa-fw"
                                                             aria-hidden="true"

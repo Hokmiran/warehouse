@@ -7,9 +7,14 @@ const employeeSchema = new Schema({
     required: true,
     trim: true
   },
-  employeeID: {
+  employeeId: {
     type: String,
     unique: true,
+    required: true
+  },
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: 'Department',
     required: true
   },
   position: {
@@ -17,13 +22,13 @@ const employeeSchema = new Schema({
     ref: 'Position',
     required: true
   },
-  position: {
-    type: Schema.Types.ObjectId,
-    ref: 'Department',
-    required: true
-  },
+
   // any other fields you might need for an employee
-});
+},
+  {
+    timestamps: true,
+  }
+);
 
 const Employee = mongoose.model('Employee', employeeSchema);
 

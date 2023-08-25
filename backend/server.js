@@ -29,7 +29,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes Middleware
 app.use("/users", userRoute);
-app.use("/employee", employeeRoute);
+app.use("/employees", employeeRoute);
 app.use("/positions", positionRoute);
 app.use("/products", productCategoryRoute);
 app.use("/products", productTransactionRoute);

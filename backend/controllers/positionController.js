@@ -11,13 +11,13 @@ exports.createPosition = async (req, res) => {
 };
 
 exports.getAllPositions = async (req, res) => {
-  const page = parseInt(req.query.page) || 0;
-  const productsPerPage = 10;
+  // const page = parseInt(req.query.page) || 0;
+  // const productsPerPage = 10;
   try {
     const positions = await Position.find()
-      .sort("-createdAt")
-      .skip(page * productsPerPage)
-      .limit(productsPerPage);
+      // .sort("-createdAt")
+      // .skip(page * productsPerPage)
+      // .limit(productsPerPage);
     res.send(positions);
   } catch (error) {
     res.status(500).send(error);

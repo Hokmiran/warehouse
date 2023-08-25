@@ -160,7 +160,18 @@ function Sidebar() {
                 }
               >
                 <i className="metismenu-icon pe-7s-paperclip"></i>
-               Positions
+                Positions
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/employees"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "mm-active" : ""
+                }
+              >
+                <i className="metismenu-icon pe-7s-add-user"></i>
+                Employees
               </NavLink>
             </li>
             <li

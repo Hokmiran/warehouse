@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const positionController = require('../controllers/positionController');
+const protect = require("../middleWare/authMiddleware");
 
-router.post('', positionController.createPosition);
-router.get('', positionController.getAllPositions);
-router.get('/:id', positionController.getPositionById);
-router.patch('/:id', positionController.updatePosition);
-router.delete('/:id', positionController.deletePosition);
-
-// Similar routes for Product, Employee, and ProductTransaction
+router.post('', protect, positionController.createPosition);
+router.get('', protect, positionController.getAllPositions);
+router.get('/:id', protect, positionController.getPositionById);
+router.patch('/:id', protect, positionController.updatePosition);
+router.delete('/:id', protect, positionController.deletePosition);
 
 module.exports = router;

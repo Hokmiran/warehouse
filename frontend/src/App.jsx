@@ -3,13 +3,12 @@ import { Route, Routes } from "react-router-dom";
 import LoadingSplash from "./components/LoadingSplash/LoadingSplash";
 // import { useSelector } from "react-redux";
 import Guard from "./components/Guard/Guard";
-// import Teachers from "./views/Teachers/Teachers";
-// import TeacherEdit from "./views/Teachers/TeacherEdit";
-
 import Products from "./views/Products/Products";
 import ProductCreate from "./views/Products/ProductCreate";
 import ProductEdit from "./views/Products/ProductEdit";
-// import TeacherRequests from "./views/Teachers/TeacherRequests";
+import Employees from "./views/Employee/Employees";
+import CreateEmployee from "./views/Employee/CreateEmployee";
+import EditEmployee from "./views/Employee/EditEmployee";
 import LessonCreate from "./views/Lessons/LessonCreate";
 import LessonEdit from "./views/Lessons/LessonEdit";
 import Contact from "./views/Contact/Contact";
@@ -127,6 +126,54 @@ let routes = [
     ),
   },
   {
+    path: "/positions",
+    element: (
+      <Guard>
+        <Positions />
+      </Guard>
+    ),
+  },
+  {
+    path: "/position/create",
+    element: (
+      <Guard>
+        <CreatePosition />
+      </Guard>
+    ),
+  },
+  {
+    path: "/position/:id/edit",
+    element: (
+      <Guard>
+        <EditPosition />
+      </Guard>
+    ),
+  },
+  {
+    path: "/employees",
+    element: (
+      <Guard>
+        <Employees />
+      </Guard>
+    ),
+  },
+  {
+    path: "/employee/create",
+    element: (
+      <Guard>
+        <CreateEmployee />
+      </Guard>
+    ),
+  },
+  {
+    path: "/employee/:id/edit",
+    element: (
+      <Guard>
+        <EditEmployee />
+      </Guard>
+    ),
+  },
+  {
     path: "/lessons/create",
     element: (
       <Guard>
@@ -156,31 +203,6 @@ let routes = [
     element: (
       <Guard>
         <ContactRequests />
-      </Guard>
-    ),
-  },
-  // resources
-  {
-    path: "/positions",
-    element: (
-      <Guard>
-        <Positions />
-      </Guard>
-    ),
-  },
-  {
-    path: "/position/create",
-    element: (
-      <Guard>
-        <CreatePosition />
-      </Guard>
-    ),
-  },
-  {
-    path: "/position/:id/edit",
-    element: (
-      <Guard>
-        <EditPosition />
       </Guard>
     ),
   },

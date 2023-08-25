@@ -15,15 +15,15 @@ const createDepartment = asyncHandler(async (req, res) => {
 
 // Get All Departments
 const getDepartment = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 0;
-  const productsPerPage = 10;
+  // const page = parseInt(req.query.page) || 0;
+  // const productsPerPage = 10;
 
   try {
     const departments = await Department.find()
 
-      .sort("-createdAt")
-      .skip(page * productsPerPage)
-      .limit(productsPerPage);
+      // .sort("-createdAt")
+      // .skip(page * productsPerPage)
+      // .limit(productsPerPage);
 
     res.json(departments);
   } catch (error) {

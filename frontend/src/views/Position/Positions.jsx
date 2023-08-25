@@ -10,7 +10,7 @@ import moment from "moment";
 
 
 
-function Departments() {
+function Positions() {
     const navigate = useNavigate();
     const location = useLocation();
     const [list, setList] = useState([]);
@@ -22,10 +22,10 @@ function Departments() {
     // Get all products
     const getData = async (page) => {
         try {
-            let res = await privateAxios.get(`/departments?page=${page}`);
+            let res = await privateAxios.get(`/positions?page=${page}`);
             const transformedData = res.data.map(item => ({
                 ...item,
-                name: item.name
+                title: item.title
             }));
             setList(transformedData);
         } catch (error) {
@@ -53,13 +53,13 @@ function Departments() {
     //   delete item
     const deleteItem = async () => {
         try {
-            await privateAxios.delete(`/departments/${modalDetails?._id}`);
+            await privateAxios.delete(`/positions/${modalDetails?._id}`);
 
             setList(list.filter((e) => e._id !== modalDetails?._id));
 
             closeModal();
 
-            toast.success(`Department deleted successfully`, {
+            toast.success(`Position deleted successfully`, {
                 position: "bottom-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -90,9 +90,9 @@ function Departments() {
             setIsPending(true);
             setCurrentPage(newPage);
             if (newPage === 0) {
-                navigate("/departments");
+                navigate("/positions");
             } else {
-                navigate(`/departments?page=${newPage + 1}`);
+                navigate(`/positions?page=${newPage + 1}`);
             }
             getData(newPage);
         }
@@ -112,8 +112,8 @@ function Departments() {
                 <div className="main-card mb-3 card">
                     <div className="card-body">
                         <div className="w-100 d-flex justify-content-between mb-3">
-                            <h5 className="card-title">Departments</h5>
-                            <Link to={"/department/create"} className="btn btn-primary mr-5">
+                            <h5 className="card-title">Positions</h5>
+                            <Link to={"/position/create"} className="btn btn-primary mr-5">
                                 <i
                                     className="fa fa-fw"
                                     aria-hidden="true"
@@ -121,7 +121,7 @@ function Departments() {
                                 >
                                     
                                 </i>
-                                New Department
+                                New Position
                             </Link>
                         </div>
                         {isPending ? (
@@ -135,7 +135,7 @@ function Departments() {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Name</th>
+                                        <th>Title</th>
                                         <th>Created At</th>
                                         <th style={{ textAlign: "center" }}>
                                             <i className="pe-7s-edit"> </i>
@@ -146,7 +146,7 @@ function Departments() {
                                     {list.map((item, key) => (
                                         <tr key={item?._id}>
                                             <th scope="row">{key + 1}</th>
-                                            <td>{item?.name} </td>
+                                            <td>{item?.title} </td>
                                             <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
                                             <td style={{ width: "20%", textAlign: "center" }}>
                                                 <div
@@ -155,7 +155,7 @@ function Departments() {
                                                     data-toggle="buttons"
                                                 >
                                                     <Link
-                                                        to={`/department/${item?._id}/edit`}
+                                                        to={`/position/${item?._id}/edit`}
                                                         className="btn btn-success"
                                                         
                                                     >
@@ -254,4 +254,4 @@ function Departments() {
     );
 }
 
-export default Departments;
+export default Positions;

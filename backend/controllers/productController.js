@@ -75,7 +75,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // Get all Products
 const getProductsByCategory = asyncHandler(async (req, res) => {
-
   const page = parseInt(req.query.page) || 0;
   const productsPerPage = 10;
   const products = await Product.find({ category: ObjectId(req.params.category) }).populate('category', 'name')

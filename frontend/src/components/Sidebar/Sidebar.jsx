@@ -105,17 +105,17 @@ function Sidebar() {
             </li>
             <li>
               <NavLink
-                to="/department"
+                to="/departments"
                 className={({ isActive, isPending }) =>
                   isPending ? "pending" : isActive ? "mm-active" : ""
                 }
               >
                 <i className="metismenu-icon pe-7s-notebook"></i>
-                Department
+                Departments
               </NavLink>
             </li>
 
-            <li
+            {/* <li
               className={toggle.first ? " " : "mm-active"}
               onClick={() => setToggle({ ...toggle, first: !toggle.first })}
             >
@@ -151,16 +151,16 @@ function Sidebar() {
                   </NavLink>
                 </li>
               </ul>
-            </li>
+            </li> */}
             <li>
               <NavLink
-                to="/resources"
+                to="/positions"
                 className={({ isActive, isPending }) =>
                   isPending ? "pending" : isActive ? "mm-active" : ""
                 }
               >
                 <i className="metismenu-icon pe-7s-paperclip"></i>
-                Resources
+               Positions
               </NavLink>
             </li>
             <li

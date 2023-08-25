@@ -6,8 +6,7 @@ const mongoose = require("mongoose");
 const createDepartment = asyncHandler(async (req, res) => {
   try {
     const { name } = req.body;
-
-    const department = await Department.create({ name, createdBy: req.user.id });
+    const department = await Department.create({ name: name, createdBy: req.user.id });
     res.status(201).json(department);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,8 +15,16 @@ const createDepartment = asyncHandler(async (req, res) => {
 
 // Get All Departments
 const getDepartment = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 0;
+  const productsPerPage = 10;
+
   try {
-    const departments = await Department.find();
+    const departments = await Department.find()
+
+      .sort("-createdAt")
+      .skip(page * productsPerPage)
+      .limit(productsPerPage);
+
     res.json(departments);
   } catch (error) {
     res.status(500).json({ message: error.message });

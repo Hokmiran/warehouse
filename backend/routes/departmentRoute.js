@@ -12,7 +12,7 @@ const {
 router.post("/", protect, createDepartment);
 router.get("/", protect, getDepartment);
 router.get("/:id", protect, getSingleDepartment);
-router.put("/:id", protect, updateDepartment);
+router.patch("/:id", protect, updateDepartment);
 router.delete("/:id", protect, deleteDepartment);
 
 module.exports = router;

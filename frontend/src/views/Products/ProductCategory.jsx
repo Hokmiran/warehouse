@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { privateAxios } from "../../utils/privateAxios";
 import Layout from "../../components/Layout/Layout";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -9,15 +9,15 @@ import { toast } from "react-toastify";
 
 const ProductCategory = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [isPending, setIsPending] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+    // const [currentPage, setCurrentPage] = useState(0);
+    // const itemsPerPage = 10;
 
-    const fetchProductsByCategory = async (page) => {
+    const fetchProductsByCategory = async () => {
         try {
-            const response = await privateAxios.get(`/products/category/${id}?page=${page}`);
+            const response = await privateAxios.get(`/products/category/${id}`);
             setProducts(response.data);
         } catch (error) {
             console.error("Error fetching products by category:", error);
@@ -81,26 +81,26 @@ const ProductCategory = () => {
 
 
     // Pagination
-    const handlePageChange = (newPage) => {
-        if (newPage >= 0) {
-            setIsPending(true);
-            setCurrentPage(newPage);
-            if (newPage === 0) {
-                navigate("/products");
-            } else {
-                navigate(`/products?page=${newPage + 1}`);
-            }
-            fetchProductsByCategory(newPage);
-        }
-    };
+    // const handlePageChange = (newPage) => {
+    //     if (newPage >= 0) {
+    //         setIsPending(true);
+    //         setCurrentPage(newPage);
+    //         if (newPage === 0) {
+    //             navigate("/products");
+    //         } else {
+    //             navigate(`/products?page=${newPage + 1}`);
+    //         }
+    //         fetchProductsByCategory(newPage);
+    //     }
+    // };
 
-    useEffect(() => {
-        const searchParams = new URLSearchParams(window.location.search);
-        const pageFromUrl = parseInt(searchParams.get("page")) || 1;
+    // useEffect(() => {
+    //     const searchParams = new URLSearchParams(window.location.search);
+    //     const pageFromUrl = parseInt(searchParams.get("page")) || 1;
 
-        setCurrentPage(pageFromUrl - 1);
-        fetchProductsByCategory(pageFromUrl - 1);
-    }, [location.search]);
+    //     setCurrentPage(pageFromUrl - 1);
+    //     fetchProductsByCategory(pageFromUrl - 1);
+    // }, [location.search]);
 
     return (
         <Layout>
@@ -207,7 +207,7 @@ const ProductCategory = () => {
                             </table>
                             : <NoData />
                         }
-                        <div className="d-flex justify-content-center mt-3">
+                        {/* <div className="d-flex justify-content-center mt-3">
                             <button
                                 className="btn btn-primary"
                                 onClick={() => handlePageChange(currentPage - 1)}
@@ -223,7 +223,7 @@ const ProductCategory = () => {
                             >
                                 Next
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

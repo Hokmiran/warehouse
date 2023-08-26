@@ -1,39 +1,55 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import { privateAxios } from "../../utils/privateAxios";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import NoData from "../../components/lottie/NoData";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css';
 import moment from "moment";
+import './Category.css';
 
 
 
 function Products() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [list, setList] = useState([]);
   const [isPending, setIsPending] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const [pageNumberInput, setPageNumberInput] = useState("");
+  const [paginationInfo, setPaginationInfo] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    pageSize: 10,
+    totalProducts: 0
+  });
 
-
-  // Get all products
-  const getData = async (page) => {
+  const getData = async (page = 1, limit = 10) => {
     try {
-      let res = await privateAxios.get(`/products?page=${page}`);
-      const transformedData = res.data.map(item => ({
+      let res = await privateAxios.get(`/products?page=${page}&limit=${limit}`);
+      const transformedData = res.data.products.map(item => ({
         ...item,
         category: item.category.name
       }));
       setList(transformedData);
+      setPaginationInfo({
+        currentPage: res.data.paginationInfo.currentPage,
+        totalPages: res.data.paginationInfo.totalPages,
+        pageSize: res.data.paginationInfo.pageSize,
+        totalProducts: res.data.paginationInfo.totalProducts
+      });
     } catch (error) {
       setList([]);
     } finally {
       setIsPending(false);
     }
   };
+
+  useEffect(() => {
+    const page = new URLSearchParams(location.search).get("page") || 1;
+    getData(page);
+  }, [location.search]);
 
   // Modal
   const [open, setOpen] = useState(false);
@@ -84,28 +100,6 @@ function Products() {
   };
 
 
-  // Pagination
-  const handlePageChange = (newPage) => {
-    if (newPage >= 0) {
-      setIsPending(true);
-      setCurrentPage(newPage);
-      if (newPage === 0) {
-        navigate("/products");
-      } else {
-        navigate(`/products?page=${newPage + 1}`);
-      }
-      getData(newPage);
-    }
-  };
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const pageFromUrl = parseInt(searchParams.get("page")) || 1;
-
-    setCurrentPage(pageFromUrl - 1);
-    getData(pageFromUrl - 1);
-  }, [location.search]);
-
   return (
     <Layout>
       <div>
@@ -130,104 +124,209 @@ function Products() {
               </SkeletonTheme>
 
             ) : list.length > 0 ?
-              <table className="mb-0 table">
+              <div>
+                {/* Items per page dropdown */}
+                <div className="page-size-select">
+                  <span>Show</span>
+                  <select
+                    id="limitSelect"
+                    value={paginationInfo.pageSize}
+                    onChange={(event) => {
+                      const newLimit = parseInt(event.target.value);
+                      getData(1, newLimit);
+                    }}
+                  >
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="75">75</option>
+                    <option value="100">100</option>
+                  </select>
+                  <span>per page</span>
+                </div>
+                <table className="mb-0 table">
 
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Image</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th style={{ textAlign: "center" }}>
-                      <i className="pe-7s-edit"> </i>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {list.map((item, key) => (
-                    <tr key={item?._id}>
-                      <th scope="row">{key + 1}</th>
-                      <td>{item?.productName} </td>
-                      <td>{item?.category} </td>
-                      <td>{item?.price} </td>
-                      <td>{item?.quantity} </td>
-                      <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
-                      <td>{item?.description} </td>
-                      <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
-                      <td style={{ width: "20%", textAlign: "center" }}>
-                        <div
-                          role="group"
-                          className="btn-group"
-                          data-toggle="buttons"
-                        >
-                          <Link
-                            to={`/product/${item?._id}/edit`}
-                            className="btn btn-success"
-                          >
-                            <i
-                              className="fa fa-fw"
-                              aria-hidden="true"
-                              title="Copy to use edit"
-                            >
-                              
-                            </i>
-                          </Link>
-                          <Link
-                            // to={`/pricing/${item?.id}/edit`}
-                            className="btn btn-primary"
-                          >
-                            <i
-                              className="fa fa-eye"
-                              aria-hidden="true"
-                              title="Copy to see product details"
-                            >
-
-                            </i>
-                          </Link>
-
-                          <button
-                            type="button"
-                            className="btn btn-danger"
-                            onClick={() => openModal(item?._id)}
-                          >
-                            <i
-                              className="fa fa-fw"
-                              aria-hidden="true"
-                              title="Copy to use trash"
-                            >
-                              
-                            </i>
-                          </button>
-                        </div>
-                      </td>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Image</th>
+                      <th>Description</th>
+                      <th>Created At</th>
+                      <th style={{ textAlign: "center" }}>
+                        <i className="pe-7s-edit"> </i>
+                      </th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {list.map((item, key) => (
+                      <tr key={item?._id}>
+                        <th scope="row">{key + 1}</th>
+                        <td>{item?.productName} </td>
+                        <td>{item?.category} </td>
+                        <td>{item?.price} </td>
+                        <td>{item?.quantity} </td>
+                        <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
+                        <td>{item?.description} </td>
+                        <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
+                        <td style={{ width: "20%", textAlign: "center" }}>
+                          <div
+                            role="group"
+                            className="btn-group"
+                            data-toggle="buttons"
+                          >
+                            <Link
+                              to={`/product/${item?._id}/edit`}
+                              className="btn btn-success"
+                            >
+                              <i
+                                className="fa fa-fw"
+                                aria-hidden="true"
+                                title="Copy to use edit"
+                              >
+                                
+                              </i>
+                            </Link>
+                            <Link
+                              // to={`/pricing/${item?.id}/edit`}
+                              className="btn btn-primary"
+                            >
+                              <i
+                                className="fa fa-eye"
+                                aria-hidden="true"
+                                title="Copy to see product details"
+                              >
 
-                  ))}
-                </tbody>
-              </table>
+                              </i>
+                            </Link>
+
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => openModal(item?._id)}
+                            >
+                              <i
+                                className="fa fa-fw"
+                                aria-hidden="true"
+                                title="Copy to use trash"
+                              >
+                                
+                              </i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                    ))}
+                  </tbody>
+                </table>
+                <div className="pagination-container">
+
+                  <button
+                    className="pagination-button prev"
+                    onClick={() => {
+                      const newPage = Math.max(1, paginationInfo.currentPage - 1);
+                      navigate(`?page=${newPage}`);
+                    }}
+                    disabled={paginationInfo.currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <div className="page-numbers">
+                    {paginationInfo.currentPage > 5 && (
+                      <button
+                        className="pagination-button"
+                        onClick={() =>
+                          getData(paginationInfo.currentPage - 5, paginationInfo.pageSize)
+                        }
+                      >
+                        ...
+                      </button>
+                    )}
+                    {Array.from({ length: paginationInfo.totalPages }, (_, index) => {
+                      if (
+                        index + 1 >= Math.max(1, paginationInfo.currentPage - 2) &&
+                        index + 1 <= Math.min(paginationInfo.totalPages, paginationInfo.currentPage + 2)
+                      ) {
+                        return (
+                          <button
+                            key={index}
+                            className={`pagination-button ${paginationInfo.currentPage === index + 1 ? "active" : ""}`}
+                            onClick={() => {
+                              navigate(`?page=${index + 1}`);
+                            }}
+                          >
+                            {index + 1}
+                          </button>
+                        );
+                      }
+                      return null;
+                    })}
+                    {paginationInfo.currentPage <= paginationInfo.totalPages - 5 && (
+                      <button
+                        className="pagination-button"
+                        onClick={() =>
+                          getData(paginationInfo.currentPage + 5, paginationInfo.pageSize)
+                        }
+                      >
+                        ...
+                      </button>
+                    )}
+                    {paginationInfo.currentPage < paginationInfo.totalPages && (
+                      <div>
+                        <span className="total-pages-text">Total pages</span>
+                        <button
+                          className={`pagination-button ${paginationInfo.currentPage === paginationInfo.totalPages ? "active" : ""
+                            }`}
+                          onClick={() => getData(paginationInfo.totalPages, paginationInfo.pageSize)}
+                        >
+                          {paginationInfo.totalPages}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="page-number-input">
+                    <input
+                      type="text"
+                      placeholder="Go to page"
+                      value={pageNumberInput}
+                      onChange={(e) => setPageNumberInput(e.target.value)}
+                    />
+                    <button
+                      className="pagination-button"
+                      onClick={() => {
+                        const enteredPageNumber = parseInt(pageNumberInput);
+                        if (
+                          !isNaN(enteredPageNumber) &&
+                          enteredPageNumber > 0 &&
+                          enteredPageNumber <= paginationInfo.totalPages
+                        ) {
+                          navigate(`?page=${enteredPageNumber}`);
+                          setPageNumberInput("");
+                        }
+                      }}
+                    >
+                      Go
+                    </button>
+                  </div>
+                  <button
+                    className="pagination-button next"
+                    onClick={() => {
+                      const newPage = Math.min(paginationInfo.currentPage + 1, paginationInfo.totalPages);
+                      navigate(`?page=${newPage}`);
+                    }}
+                    disabled={paginationInfo.currentPage === paginationInfo.totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+
+              </div>
               : <NoData />
             }
-            <div className="d-flex justify-content-center mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 0}
-              >
-                Previous
-              </button>
-              <button
-                className="btn btn-primary ml-2"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={0 == Math.floor(list.length / itemsPerPage) || list.length < itemsPerPage}
-
-              >
-                Next
-              </button>
-            </div>
           </div>
         </div>
       </div>

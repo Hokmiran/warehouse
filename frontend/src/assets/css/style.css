@@ -892,3 +892,83 @@ input.switcher:checked+.slider:before {
 .form-image-card .card-body{
     width: 100%;
 }
+
+.page-size-select {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-right: 23px;
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.page-size-select select {
+    appearance: none;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.page-size-select select:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+}
+
+.page-size-select span {
+    font-weight: bold;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    margin: 0 10px;
+}
+
+.page-numbers {
+    display: flex;
+    align-items: center;
+}
+
+.pagination-button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #fff;
+    color: #000;
+    border-radius: 5px;
+}
+
+.pagination-button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

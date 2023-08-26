@@ -1,7 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoadingSplash from "./components/LoadingSplash/LoadingSplash";
-// import { useSelector } from "react-redux";
 import Guard from "./components/Guard/Guard";
 import Products from "./views/Products/Products";
 import ProductCreate from "./views/Products/ProductCreate";

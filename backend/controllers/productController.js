@@ -59,31 +59,58 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
 
-// Get all Products
+// Get all Products with Pagination
 const getProducts = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
-  const page = parseInt(req.query.page) || 0;
-  const productsPerPage = 10;
+  const startIndex = (page - 1) * limit;
 
-  const products = await Product.find().populate('category', 'name')
-    .sort("-createdAt")
-    .skip(page * productsPerPage)
-    .limit(productsPerPage);
-  res.status(200).json(products);
+  const totalProducts = await Product.countDocuments();
+  const totalPages = Math.ceil(totalProducts / limit);
 
+  const products = await Product.find()
+    .skip(startIndex)
+    .limit(limit)
+    .populate('category', 'name');
+
+  const paginationInfo = {
+    currentPage: page,
+    totalPages,
+    pageSize: limit,
+    totalProducts,
+  };
+
+  res.status(200).json({ products, paginationInfo });
 });
 
-// Get all Products
+// Get Products by Category with Pagination
 const getProductsByCategory = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 0;
-  const productsPerPage = 10;
-  const products = await Product.find({ category: ObjectId(req.params.category) }).populate('category', 'name')
-    .sort("-createdAt")
-    .skip(page * productsPerPage)
-    .limit(productsPerPage);
-  res.status(200).json(products);
+  const categoryId = req.params.category;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
+  const startIndex = (page - 1) * limit;
+
+  const totalProducts = await Product.countDocuments({ category: categoryId });
+  const totalPages = Math.ceil(totalProducts / limit);
+
+  const products = await Product.find({ category: ObjectId(categoryId) })
+    .skip(startIndex)
+    .limit(limit)
+    .populate('category', 'name');
+
+  const paginationInfo = {
+    currentPage: page,
+    totalPages,
+    pageSize: limit,
+    totalProducts,
+  };
+
+  res.status(200).json({ products, paginationInfo });
 });
+
+
 
 // Get single product
 const getProduct = asyncHandler(async (req, res) => {

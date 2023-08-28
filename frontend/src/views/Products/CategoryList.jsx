@@ -9,8 +9,6 @@ import { Link } from "react-router-dom";
 
 
 const CategoryList = () => {
-    // const { categoryId } = useParams();
-    // const navigate = useNavigate();
     const [list, setList] = useState([]);
     const [isPending, setIsPending] = useState(true);
 

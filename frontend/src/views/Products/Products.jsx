@@ -16,7 +16,9 @@ function Products() {
   const location = useLocation();
 
   const [list, setList] = useState([]);
+
   const [isPending, setIsPending] = useState(true);
+  const [isLoadingLimit, setIsLoadingLimit] = useState(false);
   const [pageNumberInput, setPageNumberInput] = useState("");
   const [paginationInfo, setPaginationInfo] = useState({
     currentPage: 1,
@@ -25,14 +27,19 @@ function Products() {
     totalProducts: 0
   });
 
+  const [nameFilter, setNameFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [valueFilter, setValueFilter] = useState("");
+  const [quantityFilter, setQuantityFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
   const getData = async (page = 1, limit = 10) => {
+    
     try {
+      setIsPending(true);
+      setIsLoadingLimit(true);
       let res = await privateAxios.get(`/products?page=${page}&limit=${limit}`);
-      const transformedData = res.data.products.map(item => ({
-        ...item,
-        category: item.category.name
-      }));
-      setList(transformedData);
+      setList(res.data.products);
       setPaginationInfo({
         currentPage: res.data.paginationInfo.currentPage,
         totalPages: res.data.paginationInfo.totalPages,
@@ -43,12 +50,15 @@ function Products() {
       setList([]);
     } finally {
       setIsPending(false);
+      setIsLoadingLimit(false);
     }
   };
 
   useEffect(() => {
     const page = new URLSearchParams(location.search).get("page") || 1;
-    getData(page);
+    const limit = new URLSearchParams(location.search).get("limit") || paginationInfo.pageSize;
+    setIsPending(true);
+    getData(page, limit);
   }, [location.search]);
 
   // Modal
@@ -99,6 +109,30 @@ function Products() {
     }
   };
 
+  const [categories, setCategories] = useState([]);
+
+  // Get all categories
+  const getCategories = async () => {
+    try {
+      let res = await privateAxios.get(`/products/categories`);
+      setCategories(res.data);
+    } catch (error) {
+      setCategories([]);
+    }
+  };
+
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const filteredList = list.filter((item) =>
+    item.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
+    (categoryFilter === "" || item.category._id === categoryFilter) &&
+    (valueFilter === "" || item.price === parseFloat(valueFilter)) &&
+    (quantityFilter === "" || item.quantity === parseInt(quantityFilter)) &&
+    (dateFilter === "" || moment(item.createdAt).format("YYYY-MM-DD") === moment(dateFilter).format("YYYY-MM-DD"))
+  );
 
   return (
     <Layout>
@@ -118,14 +152,13 @@ function Products() {
                 New Product
               </Link>
             </div>
-            {isPending ? (
+            {isPending || isLoadingLimit || list.length === 0 ? (
               <SkeletonTheme>
                 <Skeleton animation="wave" count={10} />
               </SkeletonTheme>
 
             ) : list.length > 0 ?
               <div>
-                {/* Items per page dropdown */}
                 <div className="page-size-select">
                   <span>Show</span>
                   <select
@@ -133,7 +166,8 @@ function Products() {
                     value={paginationInfo.pageSize}
                     onChange={(event) => {
                       const newLimit = parseInt(event.target.value);
-                      getData(1, newLimit);
+                      setIsLoadingLimit(true);
+                      navigate(`?page=1&limit=${newLimit}`);
                     }}
                   >
                     <option value="10">10</option>
@@ -149,25 +183,73 @@ function Products() {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Category</th>
-                      <th>Price</th>
-                      <th>Quantity</th>
+                      <th className="filter-item">
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          value={nameFilter}
+                          onChange={(e) => setNameFilter(e.target.value)}
+                        />
+                        Name{" "}
+                      </th>
+                      <th className="filter-item">
+                        <select
+                          value={categoryFilter}
+                          onChange={(e) => {
+                            console.log("Selected Category:", e.target.value); // Add this line
+                            setCategoryFilter(e.target.value);
+                          }}
+                        >
+                          <option value="">Select a category</option>
+                          {categories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </select>
+                        Category{" "}
+                      </th>
+                      <th className="filter-item">
+                        <input
+                          type="number"
+                          placeholder="Price"
+                          value={valueFilter}
+                          onChange={(e) => setValueFilter(e.target.value)}
+                        />
+                        Price{" "}
+                      </th>
+                      <th className="filter-item">
+                        <input
+                          type="number"
+                          placeholder="Quantity"
+                          value={quantityFilter}
+                          onChange={(e) => setQuantityFilter(e.target.value)}
+                        />
+                        Quantity{" "}
+                      </th>
                       <th>Image</th>
                       <th>Description</th>
-                      <th>Created At</th>
+                      <th className="filter-item">
+                        <input
+                          type="date"
+                          placeholder="Date"
+                          value={dateFilter}
+                          onChange={(e) => setDateFilter(e.target.value)}
+                        />
+                        Created At{" "}
+                      </th>
                       <th style={{ textAlign: "center" }}>
                         <i className="pe-7s-edit"> </i>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {list.map((item, key) => (
+                    {filteredList.map((item, key) => (
                       <tr key={item?._id}>
                         <th scope="row">{key + 1}</th>
                         <td>{item?.productName} </td>
-                        <td>{item?.category} </td>
-                        <td>{item?.price} </td>
+                        <td>{item?.category?.name} </td>
+                        <td> ${item?.price} </td>
                         <td>{item?.quantity} </td>
                         <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
                         <td>{item?.description} </td>
@@ -281,7 +363,6 @@ function Products() {
                         <button
                           className={`pagination-button ${paginationInfo.currentPage === paginationInfo.totalPages ? "active" : ""
                             }`}
-                          onClick={() => getData(paginationInfo.totalPages, paginationInfo.pageSize)}
                         >
                           {paginationInfo.totalPages}
                         </button>

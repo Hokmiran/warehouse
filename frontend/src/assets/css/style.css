@@ -972,3 +972,30 @@ input.switcher:checked+.slider:before {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+.filter-item {
+    margin-bottom: 10px;
+  }
+  .filter-item input[type="text"],
+  .filter-item input[type="number"],
+  .filter-item input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #f2f2f2;
+  }
+
+  .filter-item select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #ffffff;
+    cursor: pointer;
+  }
+  

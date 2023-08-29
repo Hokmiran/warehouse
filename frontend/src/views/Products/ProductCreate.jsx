@@ -60,6 +60,7 @@ const ProductCreate = () => {
       formData.append("image", selectedImage);
 
       await privateAxios.post("/products", formData);
+      
       toast.success(`Product created successfully`, {
         position: "bottom-right",
         autoClose: 3000,

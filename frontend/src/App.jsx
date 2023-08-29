@@ -27,6 +27,7 @@ import EditDepartment from "./views/Department/EditDEpartment";
 import Positions from "./views/Position/Positions";
 import CreatePosition from "./views/Position/CreatePosition";
 import EditPosition from "./views/Position/EditPosition";
+import ProductView from "./views/Products/ProductView";
 
 const Login = lazy(() => import("./views/Login/Login"));
 const Dashboard = lazy(() => import("./views/Dashboard/Dashboard"));
@@ -89,6 +90,14 @@ let routes = [
     element: (
       <Guard>
         <ProductEdit />
+      </Guard>
+    ),
+  },
+  {
+    path: "/product/:id/view",
+    element: (
+      <Guard>
+        <ProductView />
       </Guard>
     ),
   },

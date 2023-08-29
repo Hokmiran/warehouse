@@ -7,9 +7,6 @@ import NoData from "../../components/lottie/NoData";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css';
 import moment from "moment";
-import './Category.css';
-
-
 
 function Products() {
   const navigate = useNavigate();
@@ -34,17 +31,39 @@ function Products() {
   const [dateFilter, setDateFilter] = useState("");
 
   const getData = async (page = 1, limit = 10) => {
-    
     try {
       setIsPending(true);
       setIsLoadingLimit(true);
-      let res = await privateAxios.get(`/products?page=${page}&limit=${limit}`);
-      setList(res.data.products);
+  
+      const params = new URLSearchParams({
+        page,
+        limit,
+        nameFilter,
+        categoryFilter,
+        valueFilter,
+        quantityFilter,
+        dateFilter,
+      });
+  
+      let res = await privateAxios.get(`/products/?${params.toString()}`);
+      const allProducts = res.data.products;
+  
+      // Filtreleme işlemleri
+      const filteredProducts = allProducts.filter((item) =>
+        item.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
+        (categoryFilter === "" || item.category._id === categoryFilter) &&
+        (valueFilter === "" || item.price === parseFloat(valueFilter)) &&
+        (quantityFilter === "" || item.quantity === parseInt(quantityFilter)) &&
+        (dateFilter === "" || moment(item.createdAt).format("YYYY-MM-DD") === moment(dateFilter).format("YYYY-MM-DD"))
+      );
+  
+      setList(filteredProducts);
+  
       setPaginationInfo({
         currentPage: res.data.paginationInfo.currentPage,
         totalPages: res.data.paginationInfo.totalPages,
         pageSize: res.data.paginationInfo.pageSize,
-        totalProducts: res.data.paginationInfo.totalProducts
+        totalProducts: res.data.paginationInfo.totalProducts,
       });
     } catch (error) {
       setList([]);
@@ -54,12 +73,26 @@ function Products() {
     }
   };
 
+
+  useEffect(() => {
+    getData(paginationInfo.currentPage, paginationInfo.pageSize);
+  }, [nameFilter, categoryFilter, valueFilter, quantityFilter, dateFilter]);
+
+  // Sayfa ve limit değişikliklerinde sorgu gönderme
   useEffect(() => {
     const page = new URLSearchParams(location.search).get("page") || 1;
     const limit = new URLSearchParams(location.search).get("limit") || paginationInfo.pageSize;
     setIsPending(true);
     getData(page, limit);
   }, [location.search]);
+
+  // const filteredList = list.filter((item) =>
+  //   item.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
+  //   (categoryFilter === "" || item.category._id === categoryFilter) &&
+  //   (valueFilter === "" || item.price === parseFloat(valueFilter)) &&
+  //   (quantityFilter === "" || item.quantity === parseInt(quantityFilter)) &&
+  //   (dateFilter === "" || moment(item.createdAt).format("YYYY-MM-DD") === moment(dateFilter).format("YYYY-MM-DD"))
+  // );
 
   // Modal
   const [open, setOpen] = useState(false);
@@ -126,14 +159,6 @@ function Products() {
     getCategories();
   }, []);
 
-  const filteredList = list.filter((item) =>
-    item.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
-    (categoryFilter === "" || item.category._id === categoryFilter) &&
-    (valueFilter === "" || item.price === parseFloat(valueFilter)) &&
-    (quantityFilter === "" || item.quantity === parseInt(quantityFilter)) &&
-    (dateFilter === "" || moment(item.createdAt).format("YYYY-MM-DD") === moment(dateFilter).format("YYYY-MM-DD"))
-  );
-
   return (
     <Layout>
       <div>
@@ -196,7 +221,6 @@ function Products() {
                         <select
                           value={categoryFilter}
                           onChange={(e) => {
-                            console.log("Selected Category:", e.target.value); // Add this line
                             setCategoryFilter(e.target.value);
                           }}
                         >
@@ -244,7 +268,7 @@ function Products() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredList.map((item, key) => (
+                    {list.map((item, key) => (
                       <tr key={item?._id}>
                         <th scope="row">{key + 1}</th>
                         <td>{item?.productName} </td>
@@ -273,7 +297,7 @@ function Products() {
                               </i>
                             </Link>
                             <Link
-                              // to={`/pricing/${item?.id}/edit`}
+                              to={`/product/${item?._id}/view`}
                               className="btn btn-primary"
                             >
                               <i

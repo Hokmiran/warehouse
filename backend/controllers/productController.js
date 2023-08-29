@@ -59,20 +59,41 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
 
-// Get all Products with Pagination
 const getProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  const { nameFilter, categoryFilter, valueFilter, quantityFilter, dateFilter } = req.query;
 
-  const startIndex = (page - 1) * limit;
+  const startIndex = Math.max((page - 1) * limit, 0);
 
-  const totalProducts = await Product.countDocuments();
+
+  const filter = {};
+
+  if (nameFilter) {
+    filter.productName = { $regex: nameFilter, $options: 'i' };
+  }
+  if (categoryFilter) {
+    filter.category = categoryFilter;
+  }
+  if (valueFilter) {
+    filter.price = parseFloat(valueFilter);
+  }
+  if (quantityFilter) {
+    filter.quantity = parseInt(quantityFilter);
+  }
+  if (dateFilter) {
+    const startDate = new Date(dateFilter);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    filter.createdAt = { $gte: startDate, $lt: endDate };
+  }
+
+  const totalProducts = await Product.countDocuments(filter);
   const totalPages = Math.ceil(totalProducts / limit);
 
-  const products = await Product.find()
-    .skip(startIndex)
-    .limit(limit)
-    .populate('category', 'name');
+  const allProducts = await Product.find(filter).sort({createdAt: -1}).populate('category', 'name');
+
+  const products = allProducts.slice(startIndex, startIndex + limit);
 
   const paginationInfo = {
     currentPage: page,
@@ -83,6 +104,8 @@ const getProducts = asyncHandler(async (req, res) => {
 
   res.status(200).json({ products, paginationInfo });
 });
+
+
 
 // Get Products by Category with Pagination
 const getProductsByCategory = asyncHandler(async (req, res) => {
@@ -129,6 +152,8 @@ const getProduct = asyncHandler(async (req, res) => {
   res.status(200).json(product);
 });
 
+
+
 // Delete Product
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -145,6 +170,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
   await product.remove();
   res.status(200).json({ message: "Product deleted." });
 });
+
+
 
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {

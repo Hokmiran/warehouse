@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const moment = require("moment-timezone");
+require('mongoose-moment')(mongoose)
 const Schema = mongoose.Schema;
 
 const productSchema = mongoose.Schema(
@@ -45,11 +47,22 @@ const productSchema = mongoose.Schema(
       required: [true, "Please add an image"],
       trim: true,
     },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  {
-    timestamps: true,
-  }
 );
+
+productSchema.pre("save", function (next) {
+  // Kullanıcının saat dilimini alın (örneğin: "America/New_York")
+  const userTimezone = "Asia/Baku"; // Kullanıcının saat dilimini buraya ekleyin
+
+  // createdAt alanını dönüştürün
+  this.createdAt = moment.tz(this.createdAt, userTimezone);
+
+  next();
+});
 
 const Product = mongoose.model("Product", productSchema);
 

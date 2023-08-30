@@ -86,14 +86,6 @@ function Products() {
     getData(page, limit);
   }, [location.search]);
 
-  // const filteredList = list.filter((item) =>
-  //   item.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
-  //   (categoryFilter === "" || item.category._id === categoryFilter) &&
-  //   (valueFilter === "" || item.price === parseFloat(valueFilter)) &&
-  //   (quantityFilter === "" || item.quantity === parseInt(quantityFilter)) &&
-  //   (dateFilter === "" || moment(item.createdAt).format("YYYY-MM-DD") === moment(dateFilter).format("YYYY-MM-DD"))
-  // );
-
   // Modal
   const [open, setOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState({});
@@ -277,7 +269,7 @@ function Products() {
                         <td>{item?.quantity} </td>
                         <td><img style={{ width: 50, height: 50 }} src={item?.image?.filePath} /></td>
                         <td>{item?.description} </td>
-                        <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
+                        <td>{moment(item.createdAt).format("D MMMM YYYY HH:mm")}</td>
                         <td style={{ width: "20%", textAlign: "center" }}>
                           <div
                             role="group"

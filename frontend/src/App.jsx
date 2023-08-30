@@ -8,8 +8,6 @@ import ProductEdit from "./views/Products/ProductEdit";
 import Employees from "./views/Employee/Employees";
 import CreateEmployee from "./views/Employee/CreateEmployee";
 import EditEmployee from "./views/Employee/EditEmployee";
-import LessonCreate from "./views/Lessons/LessonCreate";
-import LessonEdit from "./views/Lessons/LessonEdit";
 import Contact from "./views/Contact/Contact";
 import ContactRequests from "./views/Contact/ContactRequests";
 import Home from "./views/Content/Home";
@@ -28,6 +26,8 @@ import Positions from "./views/Position/Positions";
 import CreatePosition from "./views/Position/CreatePosition";
 import EditPosition from "./views/Position/EditPosition";
 import ProductView from "./views/Products/ProductView";
+import ProductsTransactions from "./views/ProductTransaction/ProductsTransactions";
+import CreateTransaction from "./views/ProductTransaction/CreateTransaction";
 
 const Login = lazy(() => import("./views/Login/Login"));
 const Dashboard = lazy(() => import("./views/Dashboard/Dashboard"));
@@ -182,22 +182,21 @@ let routes = [
     ),
   },
   {
-    path: "/lessons/create",
+    path: "/transactions",
     element: (
       <Guard>
-        <LessonCreate />
+        <ProductsTransactions />
       </Guard>
     ),
   },
   {
-    path: "/lessons/:id/edit",
+    path: "/transaction/create",
     element: (
       <Guard>
-        <LessonEdit />
+        <CreateTransaction />
       </Guard>
     ),
   },
-
   {
     path: "/contact",
     element: (

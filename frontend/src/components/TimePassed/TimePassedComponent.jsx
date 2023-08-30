@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
 
-const TimePassedComponent = ({ datetime }) => {
-  const [data, setData] = useState("");
-  useEffect(() => {
-    if (datetime && datetime !== undefined) {
-      let d = new Date(datetime);
-      let temp = new Intl.DateTimeFormat("en-GB", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(d);
-      setData(temp);
-    }
-  }, [datetime]);
-  return <span className="epiloge-light">{data}</span>;
+
+const formatDate = (date) => {
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "numeric"
+  };
+
+  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+  return formattedDate;
 };
 
-export default TimePassedComponent;
+const DateConverter = ({ date }) => {
+  const formattedDate = formatDate(date);
+
+  return formattedDate;
+};
+
+export default DateConverter;

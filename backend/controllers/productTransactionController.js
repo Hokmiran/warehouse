@@ -1,6 +1,7 @@
 const ProductTransaction = require('../models/productTransactionModel');
+const asyncHandler = require("express-async-handler");
 
-exports.createTransaction = async (req, res) => {
+const createTransaction = asyncHandler(async (req, res) => {
   try {
     const transaction = new ProductTransaction(req.body);
     await transaction.save();
@@ -8,28 +9,29 @@ exports.createTransaction = async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-};
+});
 
-exports.getAllTransactions = async (req, res) => {
+
+const getAllTransactions = asyncHandler(async (req, res) => {
   try {
-    const transactions = await ProductTransaction.find();
+    const transactions = await ProductTransaction.find().sort({createdAt: -1}).populate({"path" : "product employee"});
     res.send(transactions);
   } catch (error) {
     res.status(500).send(error);
   }
-};
+});
 
-exports.getTransactionById = async (req, res) => {
+const getTransactionById = asyncHandler(async (req, res) => {
   try {
-    const transaction = await ProductTransaction.findById(req.params.id);
-    if (!transaction) return res.status(404).send();
+    const transaction = await ProductTransaction.findById(req.params.id).populate({"path" : "product employee"});
+    if (!transaction) return res.status(404).json({"msg": "not found :("});
     res.send(transaction);
   } catch (error) {
     res.status(500).send(error);
   }
-};
+});
 
-exports.updateTransaction = async (req, res) => {
+const updateTransaction = asyncHandler(async (req, res) => {
   try {
     const transaction = await ProductTransaction.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -40,9 +42,9 @@ exports.updateTransaction = async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-};
+});
 
-exports.deleteTransaction = async (req, res) => {
+const deleteTransaction = asyncHandler(async (req, res) => {
   try {
     const transaction = await ProductTransaction.findByIdAndDelete(req.params.id);
     if (!transaction) return res.status(404).send();
@@ -50,4 +52,14 @@ exports.deleteTransaction = async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+});
+
+
+
+module.exports = {
+  createTransaction,
+  getAllTransactions,
+  getTransactionById,
+  updateTransaction,
+  deleteTransaction,
 };

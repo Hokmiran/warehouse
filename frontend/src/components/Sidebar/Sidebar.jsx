@@ -114,44 +114,6 @@ function Sidebar() {
                 Departments
               </NavLink>
             </li>
-
-            {/* <li
-              className={toggle.first ? " " : "mm-active"}
-              onClick={() => setToggle({ ...toggle, first: !toggle.first })}
-            >
-              <a
-                href="#"
-                className={loc.pathname.includes("teachers") ? "mm-active" : ""}
-              >
-                <i className="metismenu-icon pe-7s-users "></i>
-                Teachers
-                <i className="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-              </a>
-              <ul
-                className={
-                  toggle.first ? "mm-collapse" : "mm-collapse mm-show"
-                }
-              >
-                <li>
-                  <NavLink to="/add-user">
-                    <i className="metismenu-icon"></i>
-                    Add User
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/teachers">
-                    <i className="metismenu-icon"></i>
-                    List
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/teachers/requests">
-                    <i className="metismenu-icon"></i>
-                    Requests
-                  </NavLink>
-                </li>
-              </ul>
-            </li> */}
             <li>
               <NavLink
                 to="/positions"
@@ -172,6 +134,17 @@ function Sidebar() {
               >
                 <i className="metismenu-icon pe-7s-add-user"></i>
                 Employees
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/transactions"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "mm-active" : ""
+                }
+              >
+                <i className="metismenu-icon pe-7s-add-user"></i>
+                Products Transactions
               </NavLink>
             </li>
             <li

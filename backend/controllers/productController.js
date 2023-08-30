@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
 const { ObjectId } = require('mongodb');
+const moment = require("moment-timezone");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -66,7 +67,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
   const startIndex = Math.max((page - 1) * limit, 0);
 
-
   const filter = {};
 
   if (nameFilter) {
@@ -81,19 +81,29 @@ const getProducts = asyncHandler(async (req, res) => {
   if (quantityFilter) {
     filter.quantity = parseInt(quantityFilter);
   }
-  if (dateFilter) {
-    const startDate = new Date(dateFilter);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
-    filter.createdAt = { $gte: startDate, $lt: endDate };
-  }
 
-  const totalProducts = await Product.countDocuments(filter);
+  const allProducts = await Product.find(filter).sort({ createdAt: -1 }).populate('category', 'name');
+  
+  const userTimezone = "Asia/Baku";
+  const formattedProducts = allProducts.map(product => ({
+    ...product.toObject(),
+    createdAt: moment.tz(product.createdAt, userTimezone).format("YYYY-MM-DD HH:mm:ss"),
+  }));
+
+  const filteredProducts = formattedProducts.filter(product => {
+    if (dateFilter) {
+      const startDate = moment.tz(dateFilter, userTimezone).startOf('day');
+      const endDate = moment.tz(dateFilter, userTimezone).endOf('day');
+      const productDate = moment.tz(product.createdAt, userTimezone);
+      return productDate.isBetween(startDate, endDate, null, []);
+    }
+    return true;
+  });
+
+  const products = filteredProducts.slice(startIndex, startIndex + limit);
+
+  const totalProducts = filteredProducts.length;
   const totalPages = Math.ceil(totalProducts / limit);
-
-  const allProducts = await Product.find(filter).sort({createdAt: -1}).populate('category', 'name');
-
-  const products = allProducts.slice(startIndex, startIndex + limit);
 
   const paginationInfo = {
     currentPage: page,
@@ -104,6 +114,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
   res.status(200).json({ products, paginationInfo });
 });
+
 
 
 
@@ -116,12 +127,29 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   const startIndex = (page - 1) * limit;
 
   const totalProducts = await Product.countDocuments({ category: categoryId });
-  const totalPages = Math.ceil(totalProducts / limit);
 
   const products = await Product.find({ category: ObjectId(categoryId) })
     .skip(startIndex)
     .limit(limit)
     .populate('category', 'name');
+
+  const userTimezone = "Asia/Baku";
+  const formattedProducts = products.map(product => ({
+    ...product.toObject(),
+    createdAt: moment.tz(product.createdAt, userTimezone).format("YYYY-MM-DD HH:mm:ss"),
+  }));
+
+  const filteredProducts = formattedProducts.filter(product => {
+    if (dateFilter) {
+      const startDate = moment.tz(dateFilter, userTimezone).startOf('day');
+      const endDate = moment.tz(dateFilter, userTimezone).endOf('day');
+      const productDate = moment.tz(product.createdAt, userTimezone);
+      return productDate.isBetween(startDate, endDate, null, []);
+    }
+    return true;
+  });
+
+  const totalPages = Math.ceil(totalProducts / limit);
 
   const paginationInfo = {
     currentPage: page,
@@ -130,8 +158,9 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     totalProducts,
   };
 
-  res.status(200).json({ products, paginationInfo });
+  res.status(200).json({ products: filteredProducts, paginationInfo });
 });
+
 
 
 

@@ -19,7 +19,7 @@ const productTransactionSchema = new Schema({
   employee: {
     type: Schema.Types.ObjectId,
     ref: 'Employee',
-    required: true
+    required: true 
   },
   timestamp: {
     type: Date,

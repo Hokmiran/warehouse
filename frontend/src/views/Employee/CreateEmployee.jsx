@@ -40,8 +40,8 @@ const CreateEmployee = () => {
             const formData = {
                 name: data.name,
                 employeeId: data.employeeId,
-                department: data.department, // Doğru departman ID'sini buraya ekledik
-                position: data.position, // Doğru pozisyon ID'sini buraya ekledik
+                department: data.department, 
+                position: data.position,
             }
             await privateAxios.post("/employees", formData);
             toast.success(`Employee created successfully`, {

@@ -11,15 +11,14 @@ const productTransactionSchema = new Schema({
     type: Number,
     required: true
   },
-  transactionType: {
-    type: String,
-    enum: ['CHECKOUT', 'RETURN'],
-    required: true
+  hasReturned: {
+    type: Boolean,
+    default: false
   },
   employee: {
     type: Schema.Types.ObjectId,
     ref: 'Employee',
-    required: true 
+    required: true
   },
   timestamp: {
     type: Date,

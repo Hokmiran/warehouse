@@ -96,7 +96,7 @@ function ProductsTransactions() {
                                 New Transaction
                             </Link>
                         </div>
-                        {isPending || list.length === 0 ? (
+                        {isPending ? (
                             <SkeletonTheme>
                                 <Skeleton animation="wave" count={10} />
                             </SkeletonTheme>
@@ -134,7 +134,7 @@ function ProductsTransactions() {
                                                 <td>{item?.employee?.name} </td>
                                                 <td>{item?.product?.productName} </td>
                                                 <td>{item?.quantity} </td>
-                                                <td> {item?.transactionType} </td>
+                                                <td> {JSON.stringify(item?.hasReturned)} </td>
                                                 <td>{moment(item.createdAt).format("D MMMM YYYY")}</td>
                                                 <td style={{ width: "20%", textAlign: "center" }}>
                                                     <div

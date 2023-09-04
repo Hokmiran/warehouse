@@ -2,18 +2,24 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import { privateAxios } from "../../utils/privateAxios";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
+import AsyncSelect from "react-select/async";
 
 const CreateTransaction = () => {
 
     const formSchema = Yup.object().shape({
         employee: Yup.string().required("* Employee name is required!"),
-        productName: Yup.string().required("* Product name is required!"),
-        transactionType: Yup.string().required("* Transaction type is required!"),
+        product: Yup.object()
+            .shape({
+                value: Yup.string().required("Teacher is required"),
+                label: Yup.string().required(),
+            })
+            .required("Teacher is required"),
         quantity: Yup.number().required("* Quantity is required!"),
+        hasReturned: Yup.bool("* Transaction type is required!"),
     });
 
     const {
@@ -21,6 +27,7 @@ const CreateTransaction = () => {
         handleSubmit,
         formState: { errors },
         reset,
+        control,
     } = useForm({
         mode: "onTouched",
         resolver: yupResolver(formSchema),
@@ -28,20 +35,26 @@ const CreateTransaction = () => {
 
     const nav = useNavigate();
     const [pending, setPending] = useState(false);
-    const [products, setProducts] = useState([]);
     const [employees, setEmployees] = useState([]);
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const response = await privateAxios.get("/products");
-                setProducts(response.data.products);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            }
+    const loadOptions = async (inputValue) => {
+        try {
+            const response = await privateAxios.get(
+                `/products?nameFilter=${inputValue}`
+            );
+            const options = response.data?.products?.map((item) => ({
+                value: item._id,
+                label: item.productName,
+            }));
+
+            return options;
+        } catch (error) {
+            console.error("Error fetching options: ", error);
+            return [];
         }
-        fetchProducts();
-    }, []);
+
+    };
+
 
     useEffect(() => {
         async function fetchEmployees() {
@@ -58,16 +71,16 @@ const CreateTransaction = () => {
     const postData = async (data) => {
         if (pending) return;
         setPending(true);
-
+        console.log(data, 'hj');
         try {
             const formData = {
-                employee: data.name,
-                productName: data.employeeId,
-                quantity: data.quantity,
-                transactionType: data.transactionType,
+                employee: data?.employee,
+                product: data?.product?.value,
+                quantity: data?.quantity,
+                hasReturned: data?.hasReturned,
             }
-            await privateAxios.post("/employees", formData);
-            toast.success(`Employee created successfully`, {
+            await privateAxios.post("/products/transactions", formData);
+            toast.success(`Transaction created successfully`, {
                 position: "bottom-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -93,7 +106,7 @@ const CreateTransaction = () => {
             setPending(false);
         }
     };
-    console.log(products, "hjk");
+
     return (
         <Layout>
             <div>
@@ -131,21 +144,27 @@ const CreateTransaction = () => {
                                 </div>
                                 <div className="col-md-6">
                                     <div className="position-relative form-group">
-                                        <label htmlFor="employee">Product Name</label>
-                                        <select
-                                            name="productName"
-                                            id="productName"
-                                            className="form-control"
-                                            {...register("productName")}
-                                        >
-                                            <option value="">Select a product name</option>
-                                            {products?.map((product) => (
-                                                <option key={product._id} value={product._id}>
-                                                    {product.productName}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <label htmlFor="product">Product Name</label>
+                                        <Controller
+                                            name={"product"}
+                                            control={control}
+                                            render={({ field: { value, onChange } }) => (
+                                                <AsyncSelect
+                                                    isSearchable
+                                                    defaultOptions
+                                                    isClearable
+                                                    value={value}
+                                                    onChange={(selectedOption) =>
+                                                        onChange(selectedOption)
+                                                    }
+                                                    loadOptions={loadOptions}
+                                                />
+                                            )}
+                                        />
                                     </div>
+                                    <span className="error-message">
+                                        {errors.product?.message}
+                                    </span>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="position-relative form-group">
@@ -160,6 +179,25 @@ const CreateTransaction = () => {
                                         />
                                         <span className="error-message">
                                             {errors.quantity?.message}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="position-relative form-group">
+                                        <label htmlFor="hasReturned">Transaction Type</label>
+                                        <select
+                                            name="hasReturned"
+                                            id="hasReturned"
+                                            className="form-control"
+                                            {...register("hasReturned")}
+                                        >
+                                            <option value="">Select a transaction type</option>
+                                            <option value={true}>True</option>
+                                            <option value={false}>False</option>
+                                        </select>
+                                        <span className="error-message">
+                                            {console.log(errors)}
+                                            {errors.hasReturned?.message}
                                         </span>
                                     </div>
                                 </div>

@@ -1,0 +1,61 @@
+<%- include('./modules/_header', {page: "Login" }); %>
+
+    <div class="bg">
+        <div class="columns">
+            <div class="login-box">
+                <%- include('./modules/_alert'); %>
+                    <form class="form" action="/login" method="post">
+                        <!-- <img class="mb-3" src="../images/logo.png" height="64"> -->
+                        <div class="signin">
+                            <h1 class="topline">Login</h1>
+
+                            <div class="input-field">
+                                <label for="inputEmail" class="sr-only">Email address</label>
+                                <input type="email" id="inputEmail" class="form-control" placeholder="* Email"
+                                    name="email" required>
+                            </div>
+                            <!-- Add your email validation error message here if needed -->
+                            <div class="input-field">
+                                <label for="inputPassword" class="sr-only">Password</label>
+                                <input type="password" id="inputPassword" class="form-control" placeholder="* Password"
+                                    name="password" required>
+                                <div class="password-toggle-button">
+                                    <!-- Password toggle button and icon -->
+                                    <span id="password-toggle-icon" class="toggle-icon">
+                                        <i id="toggle-icon" class="ic-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Add your password validation error message here if needed
+                            <div class="forgot-password-link">
+                                <a href="/forgot-password">Forgot Password?</a>
+                            </div> -->
+
+                            <div class="login-box-button">
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('modules/_footer'); %>
+
+        <!-- JavaScript code for password toggle -->
+        <script>
+            const passwordField = document.getElementById('inputPassword');
+            const toggleIcon = document.getElementById('toggle-icon');
+
+            toggleIcon.addEventListener('click', () => {
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    toggleIcon.classList.remove('ic-eye');
+                    toggleIcon.classList.add('ic-eye');
+                } else {
+                    passwordField.type = 'password';
+                    toggleIcon.classList.remove('ic-eye');
+                    toggleIcon.classList.add('ic-eye');
+                }
+            });
+        </script>
